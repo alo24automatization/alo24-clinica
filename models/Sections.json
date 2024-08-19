@@ -1,0 +1,37 @@
+[
+  {
+    "type": "Director",
+    "label": "Director",
+    "value": "Direktor"
+  },
+  {
+    "type": "Reseption",
+    "label": "Qabulxona",
+    "value": "Qabulxona"
+  },
+  {
+    "type": "Cashier",
+    "label": "Kassa",
+    "value": "Kassa"
+  },
+  {
+    "type": "Doctor",
+    "label": "Shifokor",
+    "value": "Shifokor"
+  },
+  {
+    "type": "Laborotory",
+    "label": "Laborotoriya",
+    "value": "Laborotoriya"
+  },
+  {
+    "type": "Turn",
+    "label": "Navbat",
+    "value": "Navbat"
+  },
+  {
+    "type": "CounterAgent",
+    "label": "Kontragent",
+    "value": "Kontragent"
+  }
+]
