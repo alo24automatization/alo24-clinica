@@ -28,7 +28,6 @@ export const OfflineClients = () => {
   const [endDay, setEndDay] = useState(
     new Date(new Date().setDate(new Date().getDate() + 1)),
   );
-  const { setShouldReload } = useReload();
   //====================================================================
   //====================================================================
   // MODAL
@@ -1279,8 +1278,6 @@ export const OfflineClients = () => {
           } else if (isActive) {
             createHandler();
           }
-
-          setShouldReload(true);
         }}
         basic={client.lastname + " " + client.firstname}
       />

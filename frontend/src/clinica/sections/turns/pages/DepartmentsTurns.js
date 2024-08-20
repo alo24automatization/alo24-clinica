@@ -1,12 +1,5 @@
 import socketIOClient from "socket.io-client";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import Navbar from "../components/Navbar";
 import { useLocation } from "react-router-dom";
@@ -34,18 +27,9 @@ const DepartmentsTurns = () => {
   const socketRef = useRef(null);
   const isMounted = useRef(true); // To track if the component is mounted
 
-  const { shouldReload, setShouldReload } = useReload();
-
   const storedOnlineClient = JSON.parse(
     localStorage.getItem("selected_online_clients") || "[]",
   );
-
-  useEffect(() => {
-    if (shouldReload) {
-      window.location.reload();
-      setShouldReload(false);
-    }
-  }, [shouldReload, setShouldReload]);
 
   const storedDepartments =
     JSON.parse(localStorage.getItem("selected_departments")) || [];

@@ -1,10 +1,9 @@
 {
   "PORT": 9900,
-  "WS_PORT":5000,
+  "WS_PORT": 5000,
   "mongoUri": "mongodb://127.0.0.1:27017/clinica",
   "jwtSecret": "alo24",
   "baseUrl": "http://localhost:9900",
-  "botToken": "6448433447:AAFR-suFV-wVfISyDtvb8LCIKX64SDAbfCg",
+  "botToken": "6466171289:AAHp6NudDeNezXY6GXhyz6iwv5EaQaNhsYQ",
   "smsKey": "350fa2c20704462791918c0d3868068874700d02"
 }
-  
