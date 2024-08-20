@@ -39,7 +39,7 @@ const findNextAvailableTurn = async (
   clinica,
   department,
   initialTurn,
-  clientTurn
+  clientTurn,
 ) => {
   // If clientTurn is provided, check if it is available
   if (clientTurn) {
@@ -138,7 +138,7 @@ module.exports.register = async (req, res) => {
       });
     }
     const findOnlineClient = await OnlineClient.findById(
-      client?.onlineClientId
+      client?.onlineClientId,
     );
     if (client?.onlineClientId) {
       if (!findOnlineClient) {
@@ -185,7 +185,7 @@ module.exports.register = async (req, res) => {
           $lt: new Date(
             new Date().getFullYear(),
             new Date().getMonth(),
-            new Date().getDate() + 1
+            new Date().getDate() + 1,
           ),
         },
       }).sort({ createdAt: -1 });
@@ -220,7 +220,7 @@ module.exports.register = async (req, res) => {
         service.clinica,
         service.department,
         1,
-        client.queue
+        client.queue,
       );
       const clientservice = await OfflineService.findOne({
         clinica: service.clinica,
@@ -363,7 +363,7 @@ module.exports.add = async (req, res) => {
     });
 
     const updateOfflineConnector = await OfflineConnector.findById(
-      connector._id
+      connector._id,
     );
     //=========================================================
     // CreateOfflineConnector
@@ -377,7 +377,7 @@ module.exports.add = async (req, res) => {
           $lt: new Date(
             new Date().getFullYear(),
             new Date().getMonth(),
-            new Date().getDate() + 1
+            new Date().getDate() + 1,
           ),
         },
       }).sort({ createdAt: -1 });
@@ -596,7 +596,7 @@ module.exports.addConnector = async (req, res) => {
           $lt: new Date(
             new Date().getFullYear(),
             new Date().getMonth(),
-            new Date().getDate() + 1
+            new Date().getDate() + 1,
           ),
         },
       }).sort({ createdAt: -1 });
@@ -925,7 +925,7 @@ module.exports.getAllReseption = async (req, res) => {
         .select("probirka client accept services products createdAt totalprice")
         .populate(
           "client",
-          "fullname firstname lastname fathername phone national id gender born address card_number"
+          "fullname firstname lastname fathername phone national id gender born address card_number",
         )
         .populate({
           path: "services",
@@ -977,10 +977,10 @@ module.exports.getAllReseption = async (req, res) => {
             return (
               data.client &&
               new Date(
-                new Date(data.client.born).setUTCHours(0, 0, 0, 0)
+                new Date(data.client.born).setUTCHours(0, 0, 0, 0),
               ).toISOString() ===
                 new Date(
-                  new Date(clientborn).setUTCHours(0, 0, 0, 0)
+                  new Date(clientborn).setUTCHours(0, 0, 0, 0),
                 ).toISOString()
             );
           });
@@ -992,7 +992,7 @@ module.exports.getAllReseption = async (req, res) => {
         .select("probirka client accept services products createdAt totalprice")
         .populate(
           "client",
-          "fullname firstname lastname fathername phone national id gender born address card_number"
+          "fullname firstname lastname fathername phone national id gender born address card_number",
         )
         .populate({
           path: "services",
@@ -1041,7 +1041,7 @@ module.exports.getAllReseption = async (req, res) => {
         .lean()
         .then((connectors) => {
           return connectors.filter((connector) =>
-            String(connector.client && connector.client.id).includes(clientId)
+            String(connector.client && connector.client.id).includes(clientId),
           );
         });
     } else if (name) {
@@ -1051,7 +1051,7 @@ module.exports.getAllReseption = async (req, res) => {
         .select("probirka client accept services products createdAt totalprice")
         .populate(
           "client",
-          "fullname firstname lastname fathername phone national id gender born address card_number"
+          "fullname firstname lastname fathername phone national id gender born address card_number",
         )
         .populate({
           path: "services",
@@ -1104,7 +1104,7 @@ module.exports.getAllReseption = async (req, res) => {
               connector.client &&
               (connector.client.firstname + " " + connector.client.lastname)
                 .toLowerCase()
-                .includes(name.toLowerCase())
+                .includes(name.toLowerCase()),
           );
         });
     } else if (phone) {
@@ -1114,7 +1114,7 @@ module.exports.getAllReseption = async (req, res) => {
         .select("probirka client accept services products createdAt totalprice")
         .populate(
           "client",
-          "fullname firstname lastname fathername phone national id gender born address card_number"
+          "fullname firstname lastname fathername phone national id gender born address card_number",
         )
         .populate({
           path: "services",
@@ -1165,7 +1165,9 @@ module.exports.getAllReseption = async (req, res) => {
           return connectors.filter(
             (connector) =>
               connector.client &&
-              connector.client.phone.toLowerCase().includes(phone.toLowerCase())
+              connector.client.phone
+                .toLowerCase()
+                .includes(phone.toLowerCase()),
           );
         });
     } else {
@@ -1179,7 +1181,7 @@ module.exports.getAllReseption = async (req, res) => {
         .select("probirka client accept services products createdAt totalprice")
         .populate(
           "client",
-          "fullname firstname lastname fathername national phone id gender born address card_number"
+          "fullname firstname lastname fathername national phone id gender born address card_number",
         )
         .populate({
           path: "services",
@@ -1397,7 +1399,7 @@ module.exports.getDepartments = async (
   clinicaId,
   departments_ids,
   next,
-  clientId
+  clientId,
 ) => {
   try {
     const clinic = await Clinica.findById(clinicaId);
@@ -1439,12 +1441,12 @@ module.exports.getDepartments = async (
           (connector) =>
             connector.payments &&
             connector.payments.length > 0 &&
-            connector.probirka > 0
+            connector.probirka > 0,
         );
 
         if (!next && clientId) {
           department.turn = filteredConnectors.find(
-            (connector) => connector?.client?._id.toString() === clientId
+            (connector) => connector?.client?._id.toString() === clientId,
           )?.services[0].turn;
           department.waiting = filteredConnectors.length - 1;
         } else {
@@ -1480,13 +1482,13 @@ module.exports.getDepartments = async (
 
         if (!next && clientId) {
           const clientService = uniqueServices.find(
-            (service) => service.client.toString() === clientId
+            (service) => service.client.toString() === clientId,
           );
           if (clientService && clientService.turn) {
             department.turn = clientService.turn;
             department.waiting = uniqueServices.length - 1;
             department.emergency = true;
-            department.speak=true;
+            department.speak = true;
           }
         } else {
           const lastService = uniqueServices[uniqueServices.length - 1];
@@ -1505,7 +1507,7 @@ module.exports.getDepartments = async (
       dep_id: department._id,
       data: department.turn
         ? [
-            { 
+            {
               ...department,
               _id: department._id,
               name: department.name,
@@ -1520,7 +1522,9 @@ module.exports.getDepartments = async (
 
     // Ensure all departments_ids are represented in the final response
     const finalData = departments_ids.map((dep_id) => {
-      const existingData = data.find((item) => item.dep_id.toString() === dep_id.toString());
+      const existingData = data.find(
+        (item) => item.dep_id.toString() === dep_id.toString(),
+      );
       return existingData || { dep_id, data: [] }; // Add empty data if dep_id is not found
     });
 
@@ -1529,7 +1533,6 @@ module.exports.getDepartments = async (
     throw new Error("Serverda xatolik yuz berdi...");
   }
 };
-
 
 // module.exports.getDepartments = async (clinicaId, departments_ids, next, clientId) => {
 //     try {

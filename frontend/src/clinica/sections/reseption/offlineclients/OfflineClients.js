@@ -23,11 +23,12 @@ import socketIOClient from "socket.io-client";
 export const OfflineClients = () => {
   const history = useHistory();
   const [beginDay, setBeginDay] = useState(
-    new Date(new Date().setUTCHours(0, 0, 0, 0))
+    new Date(new Date().setUTCHours(0, 0, 0, 0)),
   );
   const [endDay, setEndDay] = useState(
-    new Date(new Date().setDate(new Date().getDate() + 1))
+    new Date(new Date().setDate(new Date().getDate() + 1)),
   );
+  const { setShouldReload } = useReload();
   //====================================================================
   //====================================================================
   // MODAL
@@ -43,6 +44,8 @@ export const OfflineClients = () => {
     value: "",
     visible: false,
   });
+
+  const ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
   //====================================================================
   //====================================================================
@@ -113,7 +116,7 @@ export const OfflineClients = () => {
         position: "top-right",
       });
     },
-    [toast]
+    [toast],
   );
   //====================================================================
   //====================================================================
@@ -141,12 +144,12 @@ export const OfflineClients = () => {
           { clinica: auth && auth.clinica._id, beginDay, endDay },
           {
             Authorization: `Bearer ${auth.token}`,
-          }
+          },
         );
         setConnectors(data);
         setSearchStrorage(data);
         setCurrentConnectors(
-          data.slice(indexFirstConnector, indexLastConnector)
+          data.slice(indexFirstConnector, indexLastConnector),
         );
       } catch (error) {
         notify({
@@ -156,7 +159,7 @@ export const OfflineClients = () => {
         });
       }
     },
-    [request, auth, notify, indexFirstConnector, indexLastConnector]
+    [request, auth, notify, indexFirstConnector, indexLastConnector],
   );
   const getLastCardNumber = async () => {
     try {
@@ -166,7 +169,7 @@ export const OfflineClients = () => {
         null,
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setLastCardNumber(card_number);
     } catch (error) {
@@ -188,7 +191,7 @@ export const OfflineClients = () => {
         { clinica: auth && auth.clinica._id, clientborn: new Date(e) },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setConnectors(data);
       setSearchStrorage(data);
@@ -215,7 +218,7 @@ export const OfflineClients = () => {
         { clinica: auth && auth.clinica._id, clientId },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setConnectors(data);
       setSearchStrorage(data);
@@ -242,7 +245,7 @@ export const OfflineClients = () => {
         { clinica: auth && auth.clinica._id, name },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setConnectors(data);
       setSearchStrorage(data);
@@ -269,7 +272,7 @@ export const OfflineClients = () => {
         { clinica: auth && auth.clinica._id, phone },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setConnectors(data);
       setSearchStrorage(data);
@@ -291,48 +294,48 @@ export const OfflineClients = () => {
       const searching = searchStorage.filter((item) =>
         item.client.fullname
           .toLowerCase()
-          .includes(e.target.value.toLowerCase())
+          .includes(e.target.value.toLowerCase()),
       );
       setName(e.target.value);
       setConnectors(searching);
       setCurrentConnectors(searching.slice(0, countPage));
     },
-    [searchStorage, countPage]
+    [searchStorage, countPage],
   );
 
   const searchId = useCallback(
     (e) => {
       const searching = searchStorage.filter((item) =>
-        item.client.id.toString().includes(e.target.value)
+        item.client.id.toString().includes(e.target.value),
       );
       setClientId(e.target.value);
       setConnectors(searching);
       setCurrentConnectors(searching.slice(0, countPage));
     },
-    [searchStorage, countPage]
+    [searchStorage, countPage],
   );
 
   const searchProbirka = useCallback(
     (e) => {
       const searching = searchStorage.filter((item) =>
-        item.probirka.toString().includes(e.target.value)
+        item.probirka.toString().includes(e.target.value),
       );
       setConnectors(searching);
       setCurrentConnectors(searching.slice(0, countPage));
     },
-    [searchStorage, countPage]
+    [searchStorage, countPage],
   );
 
   const searchPhone = useCallback(
     (e) => {
       const searching = searchStorage.filter((item) =>
-        item.client.phone.toString().includes(e.target.value)
+        item.client.phone.toString().includes(e.target.value),
       );
       setPhone(e.target.value);
       setConnectors(searching);
       setCurrentConnectors(searching.slice(0, countPage));
     },
-    [searchStorage, countPage]
+    [searchStorage, countPage],
   );
   //====================================================================
   //====================================================================
@@ -345,7 +348,7 @@ export const OfflineClients = () => {
       setCountPage(e.target.value);
       setCurrentConnectors(connectors.slice(0, e.target.value));
     },
-    [connectors]
+    [connectors],
   );
   //====================================================================
   //====================================================================
@@ -363,7 +366,7 @@ export const OfflineClients = () => {
         { clinica: auth.clinica._id },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setDepartments(data);
     } catch (error) {
@@ -423,13 +426,13 @@ export const OfflineClients = () => {
         { clinica: auth.clinica._id },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setCounterDoctors(
         [...data].map((item) => ({
           value: item._id,
           label: item.firstname + " " + item.lastname,
-        }))
+        })),
       );
     } catch (error) {
       notify({
@@ -470,7 +473,7 @@ export const OfflineClients = () => {
         { clinica: auth.clinica._id },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setServiceTypes(data);
     } catch (error) {
@@ -495,7 +498,7 @@ export const OfflineClients = () => {
         { clinica: auth.clinica._id },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       setAdvers(data);
     } catch (error) {
@@ -540,7 +543,7 @@ export const OfflineClients = () => {
         { clinica: auth.clinica._id },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
 
       let s = [];
@@ -611,7 +614,7 @@ export const OfflineClients = () => {
       const data = await request(
         `/api/clinica/requiredFields/${auth.clinica._id}`,
         "GET",
-        null
+        null,
       );
       setRequiredFieds(data.requiredFields);
     } catch (error) {
@@ -630,7 +633,7 @@ export const OfflineClients = () => {
   // CLIENT
 
   const [clientDate, setClientDate] = useState(
-    new Date().toISOString().slice(0, 10)
+    new Date().toISOString().slice(0, 10),
   );
 
   const [client, setClient] = useState({
@@ -746,7 +749,7 @@ export const OfflineClients = () => {
         },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       notify({
         title: t("Mijoz muvaffaqqiyatli yaratildi."),
@@ -762,13 +765,12 @@ export const OfflineClients = () => {
       clearDatas();
       setVisible(false);
       getLastCardNumber();
-      const ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
+
       const socket = socketIOClient(ENDPOINT, {
         path: "/ws",
         withCredentials: true,
       });
       socket.on("connect", () => {
-        console.log("Socket connected!");
         socket.emit(
           "getDepartmentsOnline",
           {
@@ -780,7 +782,7 @@ export const OfflineClients = () => {
             // Disconnect the socket after the operation
             socket.disconnect();
             console.log("Socket disconnected!");
-          }
+          },
         );
       });
 
@@ -846,13 +848,13 @@ export const OfflineClients = () => {
         },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
 
       getConnectors(beginDay, endDay);
       notify({
         title: `${data.lastname + " " + data.firstname}  ${t(
-          "ismli mijoz ma'lumotlari muvaffaqqiyatl yangilandi."
+          "ismli mijoz ma'lumotlari muvaffaqqiyatl yangilandi.",
         )}`,
         description: "",
         status: "success",
@@ -896,14 +898,14 @@ export const OfflineClients = () => {
         },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       localStorage.setItem("data", data);
       navigateToPay(data?.client?._id);
       getConnectors(beginDay, endDay);
       notify({
         title: `${client.lastname + " " + client.firstname}  ${t(
-          "ismli mijozga xizmatlar muvaffaqqiyatli qo'shildi."
+          "ismli mijozga xizmatlar muvaffaqqiyatli qo'shildi.",
         )}`,
         description: "",
         status: "success",
@@ -953,7 +955,7 @@ export const OfflineClients = () => {
         },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       navigateToPay(data?.client?._id);
       getConnectors(beginDay, endDay);
@@ -1008,7 +1010,7 @@ export const OfflineClients = () => {
         },
         {
           Authorization: `Bearer ${auth.token}`,
-        }
+        },
       );
       getCounterDoctors();
       setTimeout(() => {
@@ -1110,7 +1112,7 @@ export const OfflineClients = () => {
           value: service._id,
           service: service,
           department: onlineclient.department,
-        }))
+        })),
       );
     }
   }, [state?.onlineclient]);
@@ -1263,15 +1265,26 @@ export const OfflineClients = () => {
         modal={modal}
         text={t("ma'lumotlar to'g'ri kiritilganligini tasdiqlaysizmi?")}
         setModal={setModal}
-        handler={
-          client._id && !isAddConnector
-            ? isActive && addHandler
-            : client._id && isAddConnector
-            ? isActive && addConnectorHandler
-            : isActive && createHandler
-        }
+        handler={() => {
+          if (client._id) {
+            if (!isAddConnector) {
+              if (isActive) {
+                addHandler();
+              }
+            } else if (isAddConnector) {
+              if (isActive) {
+                addConnectorHandler();
+              }
+            }
+          } else if (isActive) {
+            createHandler();
+          }
+
+          setShouldReload(true);
+        }}
         basic={client.lastname + " " + client.firstname}
       />
+
       <AllModal
         modal={modal2}
         services={servicesBody}

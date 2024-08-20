@@ -1,6 +1,6 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "alo24-client",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^1.1.7",

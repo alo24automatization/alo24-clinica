@@ -1,5 +1,12 @@
 import socketIOClient from "socket.io-client";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import Navbar from "../components/Navbar";
 import { useLocation } from "react-router-dom";
@@ -22,26 +29,49 @@ const DepartmentsTurns = () => {
   const [baseUrl, setBaseUrl] = useState();
   const { request } = useHttp();
   const toast = useToast();
+
   const videoRef = useRef(null);
+  const socketRef = useRef(null);
+  const isMounted = useRef(true); // To track if the component is mounted
+
+  const { shouldReload, setShouldReload } = useReload();
+
+  const storedOnlineClient = JSON.parse(
+    localStorage.getItem("selected_online_clients") || "[]",
+  );
+
+  useEffect(() => {
+    if (shouldReload) {
+      window.location.reload();
+      setShouldReload(false);
+    }
+  }, [shouldReload, setShouldReload]);
+
+  const storedDepartments =
+    JSON.parse(localStorage.getItem("selected_departments")) || [];
 
   const notify = useCallback(
     (data) => {
-      toast({
-        title: data.title || "",
-        description: data.description || "",
-        status: data.status || "info",
-        duration: 5000,
-        isClosable: true,
-        position: "top-right",
-      });
+      if (isMounted.current) {
+        toast({
+          title: data.title || "",
+          description: data.description || "",
+          status: data.status || "info",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
     },
-    [toast]
+    [toast],
   );
 
   const getBaseUrl = useCallback(async () => {
     try {
       const data = await request("/api/baseurl", "GET", null);
-      setBaseUrl(data.baseUrl);
+      if (isMounted.current) {
+        setBaseUrl(data.baseUrl);
+      }
     } catch (error) {
       notify({
         title: error.message,
@@ -51,81 +81,147 @@ const DepartmentsTurns = () => {
   }, [request, notify]);
 
   useEffect(() => {
+    isMounted.current = true;
+
+    const selected_department_names = localStorage.getItem(
+      "selected_department_names",
+    );
     getBaseUrl();
-    const socket = socketIOClient(ENDPOINT, {
-      path: "/ws",
-      withCredentials: true,
-    });
-    socket.on("departmentsData", (data) => {
-      setTurns((prevTurns) => {
-        const dataMap = new Map();
-        data.forEach((dep) => {
-          dataMap.set(dep.dep_id, dep.data);
-        });
 
-        const updatedTurns = prevTurns
-          .map((turn) => {
-            const newData = dataMap.get(turn._id);
-            if (newData !== undefined) {
-              return {
-                ...turn,
-                data: newData,
+    // Reset the state when the component mounts
+    setTurns([]);
+    setOnlineClients([]);
+
+    // Initialize socket only if it's not already initialized
+    if (!socketRef.current) {
+      socketRef.current = socketIOClient(ENDPOINT, {
+        path: "/ws",
+        withCredentials: true,
+      });
+    }
+
+    const socket = socketRef.current;
+
+    const handleDepartmentsData = (data) => {
+      if (selected_department_names) {
+        const parsedDepartmentNames = JSON.parse(selected_department_names);
+        const departmentNamesSet = new Set(
+          parsedDepartmentNames.map((item) => item.departmentName),
+        );
+
+        if (data.length > 0) {
+          const departmentDataMap = new Map();
+
+          // Create a map for quick lookup of department data
+          data.forEach((department) => {
+            department.data.forEach((dataItem) => {
+              if (departmentNamesSet.has(dataItem.name)) {
+                if (!departmentDataMap.has(department.dep_id)) {
+                  departmentDataMap.set(department.dep_id, new Map());
+                }
+                const dataItemMap = departmentDataMap.get(department.dep_id);
+                dataItemMap.set(dataItem.id, dataItem); // Use dataItem.id as unique key
+              }
+            });
+          });
+
+          // Update state with new data while preserving previous requests
+          setTurns((prevTurns) => {
+            const updatedTurnsMap = new Map(
+              prevTurns.map((turn) => [turn._id, turn]),
+            );
+
+            departmentDataMap.forEach((dataItemsMap, dep_id) => {
+              const existingTurn = updatedTurnsMap.get(dep_id) || {
+                _id: dep_id,
+                data: [],
               };
-            }
-            return turn;
-          })
-          .filter((turn) => turn.data.length > 0);
+              const existingDataItemsMap = new Map(
+                existingTurn.data.map((item) => [item.id, item]),
+              );
 
-        data.forEach((dep) => {
-          if (!prevTurns.some((turn) => turn._id === dep.dep_id)) {
-            if (dep.data.length > 0) {
-              updatedTurns.push({
-                _id: dep.dep_id,
-                data: dep.data,
+              // Merge existing data with new data
+              dataItemsMap.forEach((dataItem, id) => {
+                existingDataItemsMap.set(id, dataItem);
               });
-            }
-          }
+
+              updatedTurnsMap.set(dep_id, {
+                ...existingTurn,
+                data: Array.from(existingDataItemsMap.values()),
+              });
+            });
+
+            return Array.from(updatedTurnsMap.values()).filter(
+              (turn) => turn.data.length > 0,
+            );
+          });
+        }
+      }
+    };
+
+    socket.on("departmentsData", handleDepartmentsData);
+
+    socket.emit("getDepartments", {
+      clinicaId: auth?.clinica?._id,
+      departments_ids,
+    });
+
+    socket.emit("getDepartmentsOnline", {
+      clinicaId: auth?.clinica?._id,
+      departments_id: id || storedOnlineClient,
+    });
+
+    socket.on("departmentsOnlineClientsData", (data) => {
+      if (data.length > 0) {
+        const filteredData = data.filter((item) => {
+          const isDepartmentSelected = storedDepartments.includes(
+            item.department,
+          );
+          const isStoredOnlineClient = storedOnlineClient.includes(
+            item.department,
+          );
+
+          // return isDepartmentSelected || isStoredOnlineClient;
+          return isStoredOnlineClient;
         });
 
-        return updatedTurns;
-      });
+        setOnlineClients((prevOnlineClients) => {
+          const prevClientsMap = new Map(
+            prevOnlineClients.map((client) => [client._id, client]),
+          );
+
+          filteredData.forEach((client) => {
+            prevClientsMap.set(client._id, client);
+          });
+
+          return Array.from(prevClientsMap.values());
+        });
+      } else {
+        setOnlineClients([]);
+      }
     });
 
-    if (id) {
-      socket.on("departmentsOnlineClientsData", (data) => {
-        setOnlineClients(data);
-      });
-    }
     socket.on("error", (errorMessage) => {
-      alert(errorMessage);
+      console.error("Socket error:", errorMessage);
+      notify({
+        title: "Socket Error",
+        description: errorMessage,
+        status: "error",
+      });
     });
 
-    const fetchDepartments = () => {
-      socket.emit("getDepartments", {
-        clinicaId: auth?.clinica?._id,
-        departments_ids,
-      });
-    };
-    const fetchDepartmentsOnlineClients = () => {
-      socket.emit("getDepartmentsOnline", {
-        clinicaId: auth?.clinica?._id,
-        departments_id: id,
-      });
-    };
-    if (id) {
-      fetchDepartmentsOnlineClients();
-    }
-    fetchDepartments();
     return () => {
-      localStorage.removeItem("spoken");
-      socket.disconnect();
+      isMounted.current = false;
+      socket.off("departmentsData");
+      socket.off("departmentsOnlineClientsData");
     };
   }, [auth?.clinica?._id]);
 
   const updatedTurns = [...turns.flatMap((turn) => turn.data)];
+
   useEffect(() => {
     const sortedTurns = [...updatedTurns].sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
     );
     let lastTurn = sortedTurns[0];
     let emergencyTurn = updatedTurns.find((item) => item.emergency);
@@ -138,7 +234,7 @@ const DepartmentsTurns = () => {
         lastTurn?.turn + lastTurn?.letter + lastTurn?.room ||
       lastTurn?.speak
     ) {
-      setSeconds(10)
+      setSeconds(10);
       speakTurn(lastTurn?.turn, lastTurn?.room, lastTurn?.letter);
     }
   }, [turns]);
@@ -180,6 +276,7 @@ const DepartmentsTurns = () => {
 
     return () => clearInterval(timer);
   }, [seconds]);
+
   const fileExtension = auth?.clinica?.ad?.split(".").pop().toLowerCase();
   const isImage = allowedImageExtensions.includes(fileExtension);
 
@@ -213,7 +310,7 @@ const DepartmentsTurns = () => {
             </li>
           )}
         </ul>
-        {id ? (
+        {storedOnlineClient.length > 0 ? (
           <div className={"border-t"}>
             <div className={"bg-[#3b82f6]"}>
               <h1

@@ -1,7 +1,6 @@
 {
-  "name": "alo24",
-  "version": "2.0.0",
-  "description": "",
+  "name": "alo24-server",
+  "version": "2.0.1",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -15,9 +14,7 @@
     "dev": "cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run frontend:start:dev\"",
     "prod": "cross-env NODE_ENV=production concurrently \"npm run server\" \"npm run frontend:start:prod\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.3.0",
     "axios": "^1.6.7",
