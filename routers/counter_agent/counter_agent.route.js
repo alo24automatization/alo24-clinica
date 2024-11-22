@@ -18,7 +18,11 @@ router.post("/counter_agent/statsionar/get", auth, (req, res) => {
 });
 
 router.post("/counter_agent/counterdoctorall/get", auth, (req, res) => {
-  require("./counter_agent").getDcotors(req, res);
+  require("./counter_agent").getDoctors(req, res);
+});
+
+router.post("/counter_agent/addServiceProtsentToDoctor/add/:doctorId", auth, (req, res) => {
+  require("./counter_agent").addServiceProtsentToDoctor(req, res);
 });
 router.post("/counter_agent/counterdoctor_clients/:id", auth, (req, res) => {
   require("./counter_agent").getDoctorClients(req, res);

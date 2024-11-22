@@ -1,5 +1,4 @@
 import {
-  Button,
   CloseButton,
   Input,
   ModalBody,
@@ -10,12 +9,12 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import {
-  faDeleteLeft,
   faPenAlt,
   faPlus,
-  faRemove,
+  faSave,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { FixedSizeList as List } from "react-window";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -83,6 +82,7 @@ const CreateCounterDoctor = () => {
     counter_agent: null,
     phone: "",
     statsionar_profit: "",
+    services_profits: [],
   });
 
   const changeDoctorData = (e) => {
@@ -245,18 +245,54 @@ const CreateCounterDoctor = () => {
       });
     }
   };
+
+  const addServiceProtsentToDoctor = async (service) => {
+    try {
+      await request(
+        `/api/counter_agent/addServiceProtsentToDoctor/add/${doctor?._id}`,
+        "POST",
+        { service },
+        {
+          Authorization: `Bearer ${auth.token}`,
+        }
+      );
+      notify({
+        title: `${doctor?.firstname} ${doctor?.lastname} ${t(
+          "yunaltiruvchi shifokor yangilandi!"
+        )}`,
+        description: "",
+        status: "success",
+      });
+      setServicesModalVisible(null);
+      getDoctorsList();
+      setSelectedDepartament(null);
+    } catch (error) {
+      notify({
+        title: error,
+        description: "",
+        status: "error",
+      });
+    }
+  };
   const [servicesModalVisible, setServicesModalVisible] = useState(false);
-  const [serviceProfitInputValue, setServiceProfitInputValue] = useState("");
   const [selectedServices, setSelectedServices] = useState([]);
   const [services, setServices] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [selectedDepartament, setSelectedDepartament] = useState(null);
+  const [servicesProfit, setServicesProfit] = useState([]);
 
   const toogleServicesModal = useCallback(() => {
-    setServicesModalVisible((prev) => !prev);
+    setServicesModalVisible((prev) => {
+      if (prev) {
+        setSelectedDepartament(null);
+      }
+      return !prev;
+    });
   }, []);
+
   const getServices = useCallback(
     (e) => {
+      
       var s = [];
       if (e === "all") {
         departments.map((department) => {
@@ -315,13 +351,13 @@ const CreateCounterDoctor = () => {
       const data = await request(
         `/api/services/department/reseption`,
         "POST",
-        { clinica: auth.clinica._id },
+        { clinica: auth?.clinica?._id },
         {
           Authorization: `Bearer ${auth.token}`,
         }
       );
       setDepartments(data);
-      getServices("all");
+      getServices(data[0]?._id);
     } catch (error) {
       notify({
         title: t(`${error}`),
@@ -332,45 +368,186 @@ const CreateCounterDoctor = () => {
   }, [request, auth, notify]);
 
   useEffect(() => {
-    // getDepartments();
-  }, []);
-
-  const filterOption = (option, rawInput) => {
-    const input = rawInput.toLowerCase();
-    if (!isNaN(input.charAt(0))) {
-      return option.data.price.toString().includes(input);
+    if (auth.clinica) {
+      if (departments.length === 0) {
+        getDepartments();
+      }
     }
-    return option.data.name.toLowerCase().includes(input);
-  };
+  }, [auth.clinica, servicesModalVisible]);
 
-  const changeService = useCallback((services) => {
-    const updatedServices = Array.isArray(services) ? services : [];
-    setSelectedServices(updatedServices);
-  }, []);
+  // const filterOption = (option, rawInput) => {
+  //   const input = rawInput.toLowerCase();
+  //   if (!isNaN(input.charAt(0))) {
+  //     return option.data.price.toString().includes(input);
+  //   }
+  //   return option.data.name.toLowerCase().includes(input);
+  // };
 
-  const changeServiceProfit = (inputValue) => {
-    const regex = /^(?!.*%.*%).*[0-9%]*$/;
+  // const changeService = useCallback((services) => {
+  //   const updatedServices = Array.isArray(services) ? services : [];
+  //   setSelectedServices(updatedServices);
+  // }, []);
 
-    if (inputValue === "%" || !regex.test(inputValue)) {
-      return;
+  const changeServiceProfit = (inputValue, serviceId) => {
+    const regex = /^\d+%?$/;
+    if (inputValue !== "") {
+      if (inputValue === "%" || !regex.test(inputValue)) {
+        return;
+      }
     }
-    setServiceProfitInputValue(inputValue);
+    const { isProtsent, inProtsent, inSum } = checkIsProtsent(
+      inputValue,
+      serviceId
+    );
+
+    const serviceIndex = servicesProfit.findIndex(
+      (service) => service.service === serviceId
+    );
+
+    let updatedServicesProfit;
+    if (serviceIndex !== -1) {
+      updatedServicesProfit = servicesProfit.map((service, index) =>
+        index === serviceIndex
+          ? {
+              ...service,
+              profit: isProtsent ? inProtsent : inSum,
+              profitInSum: inSum,
+              doctorId: doctor?._id,
+            }
+          : service
+      );
+    } else {
+      updatedServicesProfit = [
+        ...servicesProfit,
+        {
+          service: serviceId,
+          profit: isProtsent ? inProtsent : inSum,
+          profitInSum: inSum,
+          doctorId: doctor?._id,
+        },
+      ];
+    }
+
+    setServicesProfit(updatedServicesProfit);
   };
 
-  const checkIsProtsent = (value) => {
-    return value?.substring(value.length - 1) === "%";
-  };
-  const clearProfitInput = (code) => {
-    if (code === "Backspace") {
-      setServiceProfitInputValue((prev) => {
-        const newValue = prev.slice(0, prev.length);
-        return newValue;
-      });
+  const checkIsProtsent = (inputValue, serviceId) => {
+    const isProtsent = inputValue?.substring(inputValue.length - 1) === "%";
+    
+    let inSum = "";
+    let inProtsent = "";
+    if (isProtsent) {
+      const serviceIndex = services.findIndex(
+        (service) => service.value === serviceId
+      ); 
+      inSum =
+        (services[serviceIndex].price *
+          Number(inputValue.replace("%", "") || 0)) /
+        100;
+      inProtsent = inputValue;
+    } else {
+      inSum = inputValue;
     }
+
+    return { isProtsent, inProtsent, inSum };
   };
-  const handleAddServicesProfit = () => {
-    const isProtsent = checkIsProtsent(serviceProfitInputValue);
+  // const clearProfitInput = (code, serviceId) => {
+  //   if (code === "Backspace") {
+  //     const updatedServicesProfit = [...servicesProfit];
+  //     const index = updatedServicesProfit.findIndex(
+  //       (service) => service.service === serviceId
+  //     );
+
+  //     if (index !== -1) {
+  //       updatedServicesProfit[index] = {
+  //         ...updatedServicesProfit[index],
+  //         profit: updatedServicesProfit[index].profit.slice(
+  //           0,
+  //           updatedServicesProfit[index].profit.length
+  //         ),
+  //       };
+  //     }
+
+  //     setServicesProfit(updatedServicesProfit);
+  //   }
+  // };
+  const showProfitOfDoctor = (serviceId) => {
+    const currentDoctor = counterdoctors.find((d) => d._id === doctor?._id);
+    return currentDoctor?.services_profits?.find(
+      (sp) => sp?.service == serviceId
+    )?.profit;
   };
+
+  const showProfitSumOfDoctor = (serviceId) => {
+    const currentDoctor = counterdoctors.find((d) => d._id === doctor?._id);
+    return currentDoctor?.services_profits?.find(
+      (sp) => sp?.service == serviceId
+    )?.profitInSum;
+  };
+  const handleAddServicesProfit = (serviceId) => {
+    const service = servicesProfit.find(
+      (service) => service.service === serviceId
+    );
+    addServiceProtsentToDoctor(service);
+  };
+  // services row
+  const Row = ({ index ,style}) => {
+    const service = services[index];
+
+    if (!service) return null; 
+
+    return (
+      <tr key={service?.service._id} >
+        <td>{index + 1}</td>
+        <td>{service?.service?.name}</td>
+        <td>{service?.service?.price}</td>
+        <td>
+          {servicesProfit.find(
+            (sp) =>
+              sp.service === service.service._id && sp.doctorId === doctor?._id
+          )?.profitInSum ||
+            showProfitSumOfDoctor(service.service._id) ||
+            0}
+        </td>
+        <td>
+          <div className="flex items-center gap-2">
+            <Input
+              value={
+                servicesProfit.find(
+                  (s) =>
+                    s.service === service.service._id &&
+                    s.doctorId === doctor?._id
+                )?.profit
+              }
+              defaultValue={showProfitOfDoctor(service.service._id) || ""}
+              // onKeyDown={(e) =>
+              //   clearProfitInput(e.code, service.service._id)
+              // }
+              onChange={(e) =>
+                changeServiceProfit(e.target.value, service.service._id)
+              }
+              placeholder="ulushi % yoki narx"
+              className="is-valid !rounded-sm"
+            />
+            <button
+              disabled={
+                servicesProfit.find(
+                  (s) => s.service === service.service._id
+                ) === undefined ||
+                servicesProfit.find((s) => s.service === service.service._id)
+                  ?.profit === ""
+              }
+              onClick={() => handleAddServicesProfit(service?.service?._id)}
+              className="rounded-sm disabled:bg-alotrade/50 bg-alotrade px-3 py-2  text-white"
+            >
+              <FontAwesomeIcon icon={faSave} />
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <div className="min-h-full">
       <div className="bg-slate-100 content-wrapper px-lg-5 px-3">
@@ -449,7 +626,7 @@ const CreateCounterDoctor = () => {
                         <th className="border py-1 bg-alotrade text-[16px]">
                           {t("Statsionar ulushi")}
                         </th>
-                        <th hidden className="border py-1 bg-alotrade text-[16px]">
+                        <th className="border py-1 bg-alotrade text-[16px]">
                           {t("Xizmmat ulushi")}
                         </th>
                         <th className="border py-1 bg-alotrade text-[16px]">
@@ -482,7 +659,7 @@ const CreateCounterDoctor = () => {
                             <td className="border py-1 text-left text-[16px]">
                               {connector?.statsionar_profit || 0}
                             </td>
-                            <td hidden className="border py-1 text-center text-[16px]">
+                            <td className="border py-1 text-center text-[16px]">
                               {loading ? (
                                 <button className="btn btn-success" disabled>
                                   <span className="spinner-border spinner-border-sm"></span>
@@ -556,15 +733,24 @@ const CreateCounterDoctor = () => {
 
       <ChakraModal
         closeOnEsc
-        size="4xl"
+        size="full"
         isOpen={servicesModalVisible}
         onClose={toogleServicesModal}
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader className="flex items-center justify-between">
+          <ModalHeader
+            zIndex={10}
+            bg="white"
+            position={"sticky"}
+            top={0}
+            className="flex  items-center justify-between"
+          >
             Shifokor ulushi
-            <CloseButton onClick={toogleServicesModal} />
+            <CloseButton
+              className="border !border-red-500"
+              onClick={toogleServicesModal}
+            />
           </ModalHeader>
           <ModalBody>
             <div className="col-12">
@@ -579,7 +765,6 @@ const CreateCounterDoctor = () => {
                   }}
                   value={selectedDepartament}
                 >
-                  <option value="all">{t("Barcha bo'limlar")}</option>
                   {departments.map((department, index) => {
                     return (
                       <option key={index} value={department._id}>
@@ -590,7 +775,7 @@ const CreateCounterDoctor = () => {
                 </select>
               </div>
             </div>
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <div className="col-6">
                 <div className="form-group">
                   <label htmlFor="inputEmail">{t("Xizmatlar")}</label>
@@ -624,19 +809,83 @@ const CreateCounterDoctor = () => {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Xizmat nomi</th>
+                  <th>Xizmat narxi</th>
+                  <th>Shifokor ulushi</th>
+                  <th>Shifokor ulushini hisoblash</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* <List
+                  height={600} 
+                  itemCount={services.length}
+                  itemSize={50} 
+                  width="100%"  
+                >
+               {({ index, style }) => (
+           <div className="!w-full">
+             <Row index={index} style={style} />
+           </div>
+          )}
+                </List> */}
+                {services?.map((service, index) => (
+                  <tr key={service?.service._id} >
+                  <td>{index + 1}</td>
+                  <td>{service?.service?.name}</td>
+                  <td>{service?.service?.price}</td>
+                  <td>
+                    {servicesProfit.find(
+                      (sp) =>
+                        sp.service === service.service._id && sp.doctorId === doctor?._id
+                    )?.profitInSum ||
+                      showProfitSumOfDoctor(service.service._id) ||
+                      0}
+                  </td>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={
+                          servicesProfit.find(
+                            (s) =>
+                              s.service === service.service._id &&
+                              s.doctorId === doctor?._id
+                          )?.profit
+                        }
+                        defaultValue={showProfitOfDoctor(service.service._id) || ""}
+                        // onKeyDown={(e) =>
+                        //   clearProfitInput(e.code, service.service._id)
+                        // }
+                        onChange={(e) =>
+                          changeServiceProfit(e.target.value, service.service._id)
+                        }
+                        placeholder="ulushi % yoki narx"
+                        className="is-valid !rounded-sm"
+                      />
+                      <button
+                        disabled={
+                          servicesProfit.find(
+                            (s) => s.service === service.service._id
+                          ) === undefined ||
+                          servicesProfit.find((s) => s.service === service.service._id)
+                            ?.profit === ""
+                        }
+                        onClick={() => handleAddServicesProfit(service?.service?._id)}
+                        className="rounded-sm disabled:bg-alotrade/50 bg-alotrade px-3 py-2  text-white"
+                      >
+                        <FontAwesomeIcon icon={faSave} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                ))}
+              </tbody>
+            </table>
           </ModalBody>
-          <ModalFooter>
-            <Button onClick={toogleServicesModal} colorScheme="red">
-              {t("Bekor qilish")}
-            </Button>
-            <Button
-              className=" !bg-alotrade py-1.5 ml-3 text-white rounded-sm px-5 font-semibold text-base flex items-center justify-center"
-              onClick={handleAddServicesProfit}
-            >
-              {t("Saqlash")}
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </ChakraModal>
     </div>

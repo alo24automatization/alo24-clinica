@@ -11,6 +11,7 @@ const { User } = require("../../models/Users");
 const {
   StatsionarService,
 } = require("../../models/StatsionarClient/StatsionarService");
+const { Service } = require("../../models/Services/Service");
 
 module.exports.create = async (req, res) => {
   try {
@@ -179,7 +180,7 @@ module.exports.getDoctorClients = async (req, res) => {
         .select("service createdAt counterdoctor pieces client payment")
         .populate({
           path: "counterdoctor",
-          select: "firstname lastname phone",
+          select: "firstname lastname phone services_profits",
         })
         .populate({
           path: "client",
@@ -206,7 +207,12 @@ module.exports.getDoctorClients = async (req, res) => {
         service.service.counterAgentProcient <= 100
           ? (totalprice / 100) * service.service.counterAgentProcient
           : service.service.counterAgentProcient;
-
+      const counterDoctorServicesProfit =
+        service.counterdoctor.services_profits;
+      const counterdoctor_profit_from_agent =
+        counterDoctorServicesProfit.find(
+          (ds) => ds.service == service.service._id
+        )?.profitInSum || 0;
       return {
         firstname: service.client.firstname,
         lastname: service.client.lastname,
@@ -216,6 +222,7 @@ module.exports.getDoctorClients = async (req, res) => {
         serviceName: service.service.name,
         totalprice: totalprice,
         counterdoctor_profit: counterdoctor_profit,
+        counterdoctor_profit_from_agent,
         counteragent_profit: counteragent_profit,
       };
     });
@@ -250,7 +257,8 @@ module.exports.get = async (req, res) => {
       .select("service createdAt counterdoctor pieces refuse client")
       .populate({
         path: "counterdoctor",
-        select: "firstname lastname clinica_name counter_agent phone",
+        select:
+          "firstname lastname clinica_name counter_agent phone services_profits",
         match: counter_agent ? { counter_agent } : {},
       })
       .populate("client", "firstname lastname")
@@ -266,7 +274,8 @@ module.exports.get = async (req, res) => {
       .select("service createdAt counterdoctor pieces refuse client")
       .populate({
         path: "counterdoctor",
-        select: "firstname lastname clinica_name counter_agent phone",
+        select:
+          "firstname lastname clinica_name counter_agent phone services_profits",
         match: counter_agent ? { counter_agent } : {},
       })
       .populate("client", "firstname lastname")
@@ -285,9 +294,20 @@ module.exports.get = async (req, res) => {
             totalprice: 0,
             counterdoctor_profit: 0,
             counteragent_profit: 0,
+            counterdoctor_profit_from_agent: 0,
             clients: new Set(),
           };
         }
+        const counterdoctor_profit_from_agent =
+          service?.counterdoctor?.services_profits?.find(
+            (ds) =>
+              ds.service == service.service._id &&
+              service.service.counterDoctorProcient === 0
+          )?.profitInSum || 0;
+          console.log(service.service);
+          
+          
+
         const totalprice = service.service.price * service.pieces;
         const counterdoctor_profit =
           service.service.counterDoctorProcient <= 100
@@ -297,27 +317,30 @@ module.exports.get = async (req, res) => {
           service.service.counterAgentProcient <= 100
             ? (totalprice / 100) * service.service.counterAgentProcient ?? 0
             : service.service.counterAgentProcient ?? 0;
-
         acc[service.counterdoctor._id].totalprice += totalprice;
         acc[service.counterdoctor._id].counterdoctor_profit +=
           counterdoctor_profit;
         acc[service.counterdoctor._id].counteragent_profit +=
           counteragent_profit;
         acc[service.counterdoctor._id].clients.add(service.client._id);
-
+        acc[service.counterdoctor._id].counterdoctor_profit_from_agent +=
+          counterdoctor_profit_from_agent;
         return acc;
       },
       {}
     );
 
     // Convert grouped data to an array and count clients
-    const result = Object.values(groupedByCounterdoctor).map((doc) => ({
-      counterdoctor: doc.counterdoctor,
-      totalprice: doc.totalprice,
-      counterdoctor_profit: doc.counterdoctor_profit,
-      counteragent_profit: doc.counteragent_profit,
-      client_count: doc.clients.size,
-    }));
+    const result = Object.values(groupedByCounterdoctor).map((doc) => {
+      return {
+        counterdoctor: doc.counterdoctor,
+        totalprice: doc.totalprice,
+        counterdoctor_profit: doc.counterdoctor_profit,
+        counteragent_profit: doc.counteragent_profit,
+        client_count: doc.clients.size,
+        counterdoctor_profit_from_agent: doc.counterdoctor_profit_from_agent,
+      };
+    });
     // Sort clients by name using the custom alphabet compare function
     res.status(200).json(result);
   } catch (error) {
@@ -381,7 +404,7 @@ module.exports.getStatsionarProfit = async (req, res) => {
   }
 };
 
-module.exports.getDcotors = async (req, res) => {
+module.exports.getDoctors = async (req, res) => {
   try {
     const { clinica, counter_agent } = req.body;
 
@@ -407,10 +430,59 @@ module.exports.getDcotors = async (req, res) => {
       })
         .select("-__v -isArchive -updatedAt")
         .populate("counter_agent", "firstname lastname")
+
         .lean();
 
       return res.status(200).json(counterDoctors);
     }
+  } catch (error) {
+    console.log(error);
+    res.status(501).json({ error: "Serverda xatolik yuz berdi..." });
+  }
+};
+module.exports.addServiceProtsentToDoctor = async (req, res) => {
+  try {
+    const doctorId = req.params?.doctorId || null;
+
+    const { service } = req.body;
+
+    let foundDoctor = await CounterDoctor.findById(doctorId);
+    if (!foundDoctor)
+      return res.status(404).json({ error: "Doctor topilmadi!" });
+    foundDoctor = foundDoctor.toJSON();
+
+    const foundService = await Service.findById(service.service);
+    if (!foundService)
+      return res.status(404).json({ error: "Xizmat topilmadi!" });
+
+    const doctorServices = [...foundDoctor?.services_profits];
+    const serviceIndex = doctorServices.findIndex((service) => {
+      return service.service.toString() == foundService?._id.toString();
+    });
+    console.log(serviceIndex);
+
+    if (serviceIndex !== -1) {
+      doctorServices[serviceIndex].profit = service.profit;
+      doctorServices[serviceIndex].profitInSum = service.profitInSum;
+    } else {
+      doctorServices.push({
+        profit: service.profit,
+        profitInSum: service.profitInSum,
+        service: foundService,
+      });
+    }
+
+    // Update the foundDoctor's services_profits array
+    foundDoctor.services_profits = doctorServices;
+
+    // Save the updated doctor
+    await CounterDoctor.findByIdAndUpdate(doctorId, {
+      services_profits: doctorServices,
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Service profit updated successfully." });
   } catch (error) {
     console.log(error);
     res.status(501).json({ error: "Serverda xatolik yuz berdi..." });

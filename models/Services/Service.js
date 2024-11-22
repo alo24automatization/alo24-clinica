@@ -17,6 +17,7 @@ const service = new Schema(
     doctorProcient: { type: Number },
     counterAgentProcient: { type: Number },
     counterDoctorProcient: { type: Number },
+    
     isArchive: { type: Boolean, default: false },
     place: { type: Number },
     visible: { type: Boolean, default: false },

@@ -4,6 +4,7 @@ import { Pagination } from "../../../reseption/components/Pagination";
 import { DatePickers } from "../../../reseption/offlineclients/clientComponents/DatePickers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import ReactHtmlTableToExcel from "react-html-table-to-excel";
 import {
   useHistory,
   useLocation,
@@ -39,7 +40,11 @@ const DoctorClientsTable = ({
     0
   );
   const totalDoctorProfits = currentConnectors.reduce(
-    (total, connector) => total + (connector?.counterdoctor_profit || 0),
+    (total, connector) =>
+      total +
+      (connector?.counterdoctor_profit === 0||connector?.counterdoctor_profit === undefined
+        ? connector?.counterdoctor_profit_from_agent
+        : connector?.counterdoctor_profit || 0),
     0
   );
   const query = useQuery();
@@ -70,6 +75,13 @@ const DoctorClientsTable = ({
 
   const changeType = (e) => {
     setType(e.target.value);
+  };
+  const showDoctorProfit = (connector) => {
+    
+    return connector.counterdoctor_profit === 0 ||
+      connector.counterdoctor_profit === undefined
+      ? connector.counterdoctor_profit_from_agent
+      : connector.counterdoctor_profit;
   };
 
   const { request: appearanceRequest } = useHttp();
@@ -161,9 +173,20 @@ const DoctorClientsTable = ({
             />
             <DatePickers value={endDate || new Date()} changeDate={changeEnd} />
           </div>
+          <div className="text-center">
+            <div className="btn btn-primary">
+              <ReactHtmlTableToExcel
+                id="reacthtmltoexcel"
+                table="counter_clients_info-table-in"
+                sheet="Sheet"
+                buttonText="Excel"
+                filename="Konter doktor mijozlar"
+              />
+            </div>
+          </div>
         </div>
         <div className="table-responsive">
-          <table className="table m-0">
+          <table id="counter_clients_info-table-in" className="table m-0">
             <thead>
               <tr>
                 <th className="border py-1 bg-alotrade text-[16px]">№</th>
@@ -222,7 +245,7 @@ const DoctorClientsTable = ({
                       {connector?.counteragent_profit}
                     </td>
                     <td className="border py-1 text-right text-[16px]">
-                      {connector.counterdoctor_profit}
+                      {showDoctorProfit(connector)}
                     </td>
                   </tr>
                 );

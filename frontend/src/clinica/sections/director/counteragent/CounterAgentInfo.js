@@ -329,7 +329,11 @@ const CounterAgentInfo = () => {
       console.log("Appearance settings get error");
     }
   };
-
+  const showDoctorProfit = (connector) => {
+    console.log(connector);
+    
+    return connector.counterdoctor_profit+connector.counterdoctor_profit_from_agent
+  };
   useEffect(() => {
     if (auth?.clinica?._id) {
       getAppearanceFields();
@@ -423,7 +427,7 @@ const CounterAgentInfo = () => {
               </div>
               <div className="table-responsive">
                 {type !== "offline" ? (
-                  <table className="table m-0">
+                  <table id="counter_agent_info-table" className="table m-0">
                     <thead>
                       <tr>
                         <th className="border py-1 bg-alotrade text-[16px]">
@@ -488,7 +492,7 @@ const CounterAgentInfo = () => {
                               {connector?.counteragent_profit}
                             </td>
                             <td className="border py-1 text-right text-[16px]">
-                              {connector.counterdoctor_profit}
+                              {showDoctorProfit(connector)}
                             </td>
                             <td className="border py-1 font-weight-bold text-[16px]">
                               {connector?.counterdoctor?.lastname +
@@ -531,7 +535,7 @@ const CounterAgentInfo = () => {
                     </tbody>
                   </table>
                 ) : (
-                  <table className="table m-0">
+                  <table id="counter_agent_info-table" className="table m-0">
                     <thead>
                       <tr>
                         <th className="border py-1 bg-alotrade text-[16px]">
@@ -595,7 +599,8 @@ const CounterAgentInfo = () => {
                               {connector?.counteragent_profit}
                             </td>
                             <td className="border py-1 text-right text-[16px]">
-                              {connector.counterdoctor_profit}
+                            {showDoctorProfit(connector)}
+
                             </td>
                             <td className="border py-1 text-right text-[16px]">
                               <button
@@ -639,7 +644,7 @@ const CounterAgentInfo = () => {
                         <td className="border py-1 text-right text-[16px] font-bold">
                           {connectors.reduce(
                             (prev, el) =>
-                              prev + (el?.counterdoctor_profit || 0),
+                              prev + (el?.counterdoctor_profit+el?.counterdoctor_profit_from_agent || 0),
                             0
                           )}
                         </td>

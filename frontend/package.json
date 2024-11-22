@@ -72,6 +72,7 @@
     "react-speech-kit": "^3.0.1",
     "react-tilt": "^1.0.2",
     "react-to-print": "^2.14.6",
+    "react-window": "^1.8.10",
     "socket.io-client": "^4.7.5",
     "tesseract.js": "^2.1.5",
     "web-vitals": "^2.1.4",
