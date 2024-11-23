@@ -792,6 +792,7 @@ export const OfflineClients = () => {
         setTurnCheckData(data);
         if (auth.clinica?.reseption_and_pay) {
           setOpenSmallCheck(IsPayFromReseption);
+
           sessionStorage.removeItem("payFromReseption");
           sessionStorage.removeItem("modeMonoblok");
           sessionStorage.removeItem("client_id");
