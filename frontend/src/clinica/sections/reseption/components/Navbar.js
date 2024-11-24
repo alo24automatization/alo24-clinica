@@ -34,6 +34,7 @@ const Navbar = () => {
           { name: t("Xarajat"), to: "/alo24/cashier_expense" },
         ],
       },
+      { name: t("Operatsiya"), to: "/alo24/operation" },
     ],
     [t]
   );

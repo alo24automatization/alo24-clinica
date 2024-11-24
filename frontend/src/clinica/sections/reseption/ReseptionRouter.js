@@ -10,6 +10,7 @@ import { DiscountClients } from "../cashier/discountclients/DiscountClients";
 import { DebtClients } from "../cashier/debtclients/DebtClients";
 import Expense from "../cashier/expense/Expense";
 import { OnlineClientsDoctor } from "./onlineclients/OnlineClientsDoctor";
+import Operation from "../cashier/operation/Operation";
 
 export const ReseptionRouter = () => {
   return (
@@ -17,6 +18,9 @@ export const ReseptionRouter = () => {
       <Switch>
         <Route path="/alo24" exact>
           <OfflineClients />
+        </Route>
+        <Route path="/alo24/operation" exact>
+          <Operation />
         </Route>
         <Route path="/alo24/statsionar">
           <StatsionarClients />
