@@ -143,6 +143,30 @@ const MainReport = () => {
       })
     }
   }, [request, auth, notify])
+  const [operationsTotal, setOperationsTotal] = useState(0)
+  const [operations, setOperations] = useState([])
+
+  const getOperationsWithTotal = useCallback(async (beginDay, endDay, clinica) => {
+    
+    try {
+      const data = await request(
+        `/api/cashier/operation/total/findAll`,
+        'POST',
+        { clinica: clinica, beginDay, endDay },
+        {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      )
+      setOperationsTotal(data.total);
+      setOperations(data.operations)
+    } catch (error) {
+      notify({
+        title: t(`${error}`),
+        description: '',
+        status: 'error',
+      })
+    }
+  }, [request, auth, notify])
 
   //====================================================================
   //====================================================================
@@ -251,6 +275,7 @@ const MainReport = () => {
     setBeginDay(new Date(new Date(e).setUTCHours(0, 0, 0, 0)))
     getConnectors(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay, clinicaValue)
     getExpenseTotal(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay, clinicaValue)
+    getOperationsWithTotal(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay, clinicaValue)
   }
 
   const changeEnd = (e) => {
@@ -259,6 +284,7 @@ const MainReport = () => {
     setEndDay(date)
     getConnectors(beginDay, date, clinicaValue)
     getExpenseTotal(beginDay, date, clinicaValue)
+    getOperationsWithTotal(beginDay, date, clinicaValue)
   }
 
   //====================================================================
@@ -364,6 +390,7 @@ const MainReport = () => {
       getConnectors(beginDay, endDay, clinicaValue)
       getExpenseTotal(beginDay, endDay, clinicaValue)
       getBaseUrl()
+      getOperationsWithTotal(beginDay, endDay, clinicaValue)
     }
   }, [auth, getConnectors, getBaseUrl, s, beginDay, endDay])
   const { request: request2 } = useHttp()
@@ -400,6 +427,7 @@ const MainReport = () => {
                   setClinicaValue(e.value);
                   getConnectors(beginDay, endDay, e.value);
                   getExpenseTotal(beginDay, endDay, e.value);
+                  getOperationsWithTotal(beginDay, endDay, e.value);
                 }}
                 components={animatedComponents}
                 options={[
@@ -448,6 +476,8 @@ const MainReport = () => {
               beginDay={beginDay}
               endDay={endDay}
               expenses={expenses}
+              operationsTotal={operationsTotal}
+              operations={operations}
             />
           </div>
         </div>
