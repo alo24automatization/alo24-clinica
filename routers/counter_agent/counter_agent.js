@@ -208,7 +208,7 @@ module.exports.getDoctorClients = async (req, res) => {
           ? (totalprice / 100) * service.service.counterAgentProcient
           : service.service.counterAgentProcient;
       const counterDoctorServicesProfit =
-        service.counterdoctor.services_profits;
+        service?.counterdoctor?.services_profits;
       const counterdoctor_profit_from_agent =
         counterDoctorServicesProfit.find(
           (ds) => ds.service == service.service._id
