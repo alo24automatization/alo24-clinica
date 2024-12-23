@@ -1,7 +1,7 @@
 {
   "PORT": 9900,
   "WS_PORT": 5000,
-  "mongoUri": "mongodb://127.0.0.1:27017/alo24",
+  "mongoUri": "mongodb://localhost:27017/alo24",
   "jwtSecret": "alo24",
   "baseUrl": "http://localhost:9900",
   "botToken": "6466171289:AAHp6NudDeNezXY6GXhyz6iwv5EaQaNhsYQ",

@@ -692,7 +692,7 @@ export const StatsionarReportTable = ({
                           <Money value={connector.total}/>
                         </td>
                         <td className="border py-1 text-[16px] text-right">
-                          <Money value={connector.totalWhileNow}/>
+                          <Money value={connector.payment}/>
                         </td>
                         <td className="border py-1 text-[16px] text-right">
                           <Money value={connector.cash}/>

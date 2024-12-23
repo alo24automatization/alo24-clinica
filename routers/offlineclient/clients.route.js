@@ -940,7 +940,7 @@ module.exports.getAll = async (req, res) => {
       .populate({
         path: "services",
         select:
-          "service serviceid accept refuse column tables turn connector client files department",
+          "service serviceid accept refuse column tables turn connector client files department counterdoctor",
         populate: {
           path: "service",
           select: "price",
@@ -949,7 +949,7 @@ module.exports.getAll = async (req, res) => {
       .populate({
         path: "services",
         select:
-          "service serviceid accept refuse column tables turn connector client files department",
+          "service serviceid accept refuse column tables turn connector client files department counterdoctor",
         populate: {
           path: "serviceid",
           select: "servicetype",
@@ -962,7 +962,7 @@ module.exports.getAll = async (req, res) => {
       .populate({
         path: "services",
         select:
-          "service serviceid accept refuse column tables turn connector client files department",
+          "service serviceid accept refuse column tables turn connector client files department counterdoctor",
         populate: {
           path: "templates",
           select: "name template",
@@ -971,10 +971,19 @@ module.exports.getAll = async (req, res) => {
       .populate({
         path: "services",
         select:
-          "service serviceid accept refuse column tables turn connector client files department",
+          "service serviceid accept refuse column tables turn connector client files department counterdoctor",
         populate: {
           path: "department",
           select: "probirka",
+        },
+      })
+      .populate({
+        path: "services",
+        select:
+          "service serviceid accept refuse column tables turn connector client files department counterdoctor",
+        populate: {
+          path: "counterdoctor",
+          select: "firstname lastname",
         },
       })
       .populate("payments")
