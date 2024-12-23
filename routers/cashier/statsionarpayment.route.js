@@ -335,8 +335,8 @@ module.exports.getAll = async (req, res) => {
       const payments = await StatsionarPayment.find({
         clinica,
         createdAt: {
-          $gte: new Date(beginDay).setHours(23, 59, 59, 59),
-          $lte: new Date(endDay).setHours(23, 59, 59, 59),
+          $gte: new Date(beginDay),
+          $lte: new Date(endDay),
         },
       })
         .populate("client")
