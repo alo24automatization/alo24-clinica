@@ -59,7 +59,7 @@ const OfflineClients = () => {
   //=================================================
 
   const [currentPage, setCurrentPage] = useState(0);
-  const [countPage, setCountPage] = useState(10);
+  const [countPage, setCountPage] = useState(200);
 
   const indexLastUser = (currentPage + 1) * countPage;
   const indexFirstUser = indexLastUser - countPage;
@@ -223,10 +223,16 @@ const OfflineClients = () => {
   };
 
   const setPageSize = (e) => {
-    setCurrentPage(0);
-    setCountPage(e.target.value);
-    setCurrentClients(searchStorage.slice(0, e.target.value));
-  };
+    if (e.target.value === 'all') {
+      setCurrentPage(0)
+      setCountPage(200)
+      setCurrentConnectors(searchStorage)
+    } else {
+      setCurrentPage(0)
+      setCountPage(e.target.value)
+      setCurrentConnectors(searchStorage.slice(0, e.target.value))
+    }
+  }
 
   const changeStart = (e) => {
     setBeginDay(new Date(new Date(e).setUTCHours(0, 0, 0, 0)));
@@ -277,8 +283,8 @@ const OfflineClients = () => {
         [...searchStorage].filter(
           (connector) =>
             new Date().getFullYear() -
-              new Date(connector?.client?.born).getFullYear() ===
-              age && connector?.client?.gender === gender
+            new Date(connector?.client?.born).getFullYear() ===
+            age && connector?.client?.gender === gender
         )
       );
     } else if (age && national && !gender) {
@@ -286,8 +292,8 @@ const OfflineClients = () => {
         [...searchStorage].filter(
           (connector) =>
             new Date().getFullYear() -
-              new Date(connector?.client?.born).getFullYear() ===
-              age &&
+            new Date(connector?.client?.born).getFullYear() ===
+            age &&
             connector?.client?.national &&
             connector?.client?.national === national
         )
@@ -306,8 +312,8 @@ const OfflineClients = () => {
         [...searchStorage].filter(
           (connector) =>
             new Date().getFullYear() -
-              new Date(connector?.client?.born).getFullYear() ===
-              age &&
+            new Date(connector?.client?.born).getFullYear() ===
+            age &&
             connector?.client?.national &&
             connector?.client?.national === national &&
             connector?.client?.gender === gender
@@ -319,7 +325,7 @@ const OfflineClients = () => {
           [...searchStorage].filter(
             (connector) =>
               new Date().getFullYear() -
-                new Date(connector?.client?.born).getFullYear() ===
+              new Date(connector?.client?.born).getFullYear() ===
               age
           )
         );
@@ -372,10 +378,8 @@ const OfflineClients = () => {
                         onChange={setPageSize}
                         style={{ minWidth: "50px" }}
                       >
-                        <option value={10}>10</option>
-                        <option value={25}>25</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
+                        <option value={200}>200</option>
+                        <option value={"all"}>{t("Barchasi")}</option>
                       </select>
                     </div>
                     <div>
@@ -428,8 +432,8 @@ const OfflineClients = () => {
                           e.target.value === 0
                             ? setAge(0)
                             : e.target.value > 0
-                            ? setAge(+e.target.value)
-                            : setAge(null)
+                              ? setAge(+e.target.value)
+                              : setAge(null)
                         }
                         style={{ maxWidth: "200px", minWidth: "100px" }}
                         type="number"
@@ -524,7 +528,7 @@ const OfflineClients = () => {
                           return (
                             <tr key={key}>
                               <td className="border-right text-[16px] font-weight-bold">
-                                {key + 1}
+                                {currentPage * countPage + key + 1}
                               </td>
                               <td className="border-right text-[16px]">
                                 {new Date(
@@ -577,19 +581,19 @@ const OfflineClients = () => {
                                 {connector.services.find(
                                   (el) => el?.counterdoctor
                                 )?.counterdoctor && (
-                                  <span>
-                                    {
-                                      connector.services.find(
-                                        (el) => el?.counterdoctor
-                                      ).counterdoctor.firstname
-                                    }{" "}
-                                    {
-                                      connector.services.find(
-                                        (el) => el?.counterdoctor
-                                      ).counterdoctor.lastname
-                                    }
-                                  </span>
-                                )}
+                                    <span>
+                                      {
+                                        connector.services.find(
+                                          (el) => el?.counterdoctor
+                                        ).counterdoctor.firstname
+                                      }{" "}
+                                      {
+                                        connector.services.find(
+                                          (el) => el?.counterdoctor
+                                        ).counterdoctor.lastname
+                                      }
+                                    </span>
+                                  )}
                               </td>
                               <td className="border py-1 text-center text-[16px]">
                                 {loading ? (
@@ -616,12 +620,12 @@ const OfflineClients = () => {
                                       <FontAwesomeIcon icon={faPenAlt} />
                                     </button>
 
-                                    <button
+                                    {/* <button
                                       onClick={() => deleteClient(connector)}
                                       className="btn btn-danger py-0"
                                     >
                                       <FontAwesomeIcon icon={faTrash} />
-                                    </button>
+                                    </button> */}
                                   </div>
                                 )}
                               </td>

@@ -21,8 +21,6 @@ export const TableClients = ({
   searchId,
   searchFullname,
   connectors,
-  currentPage2,
-  setCurrentPage2,
   setCurrentPage,
   countPage,
   currentConnectors,
@@ -70,10 +68,8 @@ export const TableClients = ({
                 onChange={setPageSize}
                 style={{ minWidth: "50px" }}
               >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
+                <option value={200}>200</option>
+                <option value={"all"}>{t("Barchasi")}</option>
               </select>
             </div>
             <div className="flex gap-4">
@@ -117,13 +113,11 @@ export const TableClients = ({
             <div className="text-center ml-auto">
               <Pagination
                 currentPage={currentPage}
-                currentPage2={currentPage2}
-                setCurrentPage2={setCurrentPage2}
                 setCurrentDatas={setCurrentConnectors}
-                datas={searchStorage}
+                datas={connectors}
                 setCurrentPage={setCurrentPage}
                 countPage={countPage}
-                totalDatas={searchStorage.length}
+                totalDatas={connectors.length}
               />
             </div>
             <div

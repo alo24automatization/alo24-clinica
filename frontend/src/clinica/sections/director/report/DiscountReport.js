@@ -24,7 +24,7 @@ export const DiscountReport = () => {
 
     //====================================================================
     //====================================================================
-        const {t} = useTranslation()
+    const { t } = useTranslation()
     //====================================================================
     //====================================================================
     // RegisterPage
@@ -39,7 +39,7 @@ export const DiscountReport = () => {
     //====================================================================
     // Pagination
     const [currentPage, setCurrentPage] = useState(0);
-    const [countPage, setCountPage] = useState(10);
+    const [countPage, setCountPage] = useState(200);
 
     const indexLastConnector = (currentPage + 1) * countPage;
     const indexFirstConnector = indexLastConnector - countPage;
@@ -123,7 +123,7 @@ export const DiscountReport = () => {
         async (beginDay, endDay, clinica) => {
             try {
                 const data = await request(
-                    ` /api/cashier/offline/discounts`,
+                    `/api/cashier/offline/discounts`,
                     "POST",
                     { clinica: clinica, beginDay, endDay },
                     {
@@ -146,7 +146,7 @@ export const DiscountReport = () => {
         async (beginDay, endDay, clinica) => {
             try {
                 const data = await request(
-                    ` /api/cashier/statsionar/discounts`,
+                    `/api/cashier/statsionar/discounts`,
                     "POST",
                     { clinica: clinica, beginDay, endDay },
                     {
@@ -251,14 +251,17 @@ export const DiscountReport = () => {
 
     //====================================================================
     //====================================================================
-    const setPageSize = useCallback(
-        (e) => {
+    const setPageSize = (e) => {
+        if (e.target.value === "all") {
+            setCurrentPage(0);
+            setCountPage(200);
+            setCurrentConnectors(connectors);
+        } else {
             setCurrentPage(0);
             setCountPage(e.target.value);
-            setCurrentConnectors(connectors.slice(0, countPage));
-        },
-        [countPage, connectors]
-    );
+            setCurrentConnectors(connectors.slice(0, e.target.value));
+        }
+    }
 
     //====================================================================
     //====================================================================
@@ -417,6 +420,7 @@ export const DiscountReport = () => {
                             setCurrentPage={setCurrentPage}
                             countPage={countPage}
                             changeStart={changeStart}
+                            connectors={connectors}
                             changeEnd={changeEnd}
                             currentPage={currentPage}
                             sortComment={sortComment}

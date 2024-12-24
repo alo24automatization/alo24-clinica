@@ -37,7 +37,7 @@ export const MainReportTable = ({
     endDay,
     expenses
 }) => {
-    const {t} = useTranslation()
+    const { t } = useTranslation()
     // const setPosition = (connector) => {
     //     const payments = connector.payments.reduce((prev, el) => prev + el.payment, 0)
     //     if (debt) {
@@ -61,9 +61,7 @@ export const MainReportTable = ({
                                 onChange={setPageSize}
                                 style={{ minWidth: "50px" }}
                             >
-                                <option value={10}>10</option>
-                                <option value={25}>25</option>
-                                <option value={50}>50</option>
+                                <option value={200}>200</option>
                                 <option value={'all'}>{t("Barchasi")}</option>
                             </select>
                         </div>
@@ -136,8 +134,8 @@ export const MainReportTable = ({
                             </div>
                         </div>
                     </div>
-                    <table className="overflow-scroll table m-0 table-sm" style={{display: 'block', maxHeight: "600px"}}>
-                        <thead style={{position: 'sticky', top: "0"}}>
+                    <table className="overflow-scroll table m-0 table-sm" style={{ display: 'block', maxHeight: "600px" }}>
+                        <thead style={{ position: 'sticky', top: "0" }}>
                             <tr>
                                 <th className="border py-1 bg-alotrade text-[16px]">№</th>
                                 <th className="border py-1 bg-alotrade text-[16px]">
@@ -297,7 +295,7 @@ export const MainReportTable = ({
                                 <td className="border py-1 text-[16px] font-bold text-right">
                                     {searchStorage.reduce((prev, el) => prev + el?.payment, 0)}
                                 </td>
-                                <td className="border py-1 text-[16px] font-bold text-right"> 
+                                <td className="border py-1 text-[16px] font-bold text-right">
                                     {searchStorage.reduce((prev, el) => prev + el.cash, 0)}
                                 </td>
                                 <td className="border py-1 text-[16px] font-bold text-right">

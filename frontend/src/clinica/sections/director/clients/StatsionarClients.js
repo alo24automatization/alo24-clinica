@@ -9,7 +9,7 @@ import StatsionarClientsTable from "./components/StatsionarClientsTable";
 import { useTranslation } from "react-i18next";
 
 const StatsionarClients = () => {
-    
+
     const [beginDay, setBeginDay] = useState(
         new Date(new Date().setUTCHours(0, 0, 0, 0))
     );
@@ -39,12 +39,12 @@ const StatsionarClients = () => {
 
     //====================================================================
     //====================================================================
-    const {t} = useTranslation()
+    const { t } = useTranslation()
     //====================================================================
     //====================================================================
     // Pagination
     const [currentPage, setCurrentPage] = useState(0);
-    const [countPage, setCountPage] = useState(10);
+    const [countPage, setCountPage] = useState(200);
 
     const indexLastConnector = (currentPage + 1) * countPage;
     const indexFirstConnector = indexLastConnector - countPage;
@@ -183,7 +183,7 @@ const StatsionarClients = () => {
 
     const searchFinished = (e) => {
         setType(e.target.value)
-}
+    }
 
     const searchDoctor = useCallback(
         (e) => {
@@ -241,7 +241,7 @@ const StatsionarClients = () => {
             const data = await request(
                 `/api/offlineclient/client/delete`,
                 'POST',
-                {clinica: auth.clinica._id, ...connector},
+                { clinica: auth.clinica._id, ...connector },
                 {
                     Authorization: `Bearer ${auth.token}`,
                 },

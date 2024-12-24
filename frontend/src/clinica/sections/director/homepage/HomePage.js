@@ -12,7 +12,7 @@ export const HomePage = () => {
   const auth = useContext(AuthContext)
 
 
-  const {t} = useTranslation()
+  const { t } = useTranslation()
 
   //=======================================
   //=======================================
@@ -56,6 +56,10 @@ export const HomePage = () => {
     totalsum: []
   })
 
+  const beginDay = new Date(new Date().setHours(0, 0, 0, 0))
+  const endDay = new Date(new Date().setHours(23, 59, 59, 59))
+
+
   const getMonthlyReport = useCallback(async () => {
     try {
       const data = await request(
@@ -91,7 +95,7 @@ export const HomePage = () => {
       const data = await request(
         `/api/offline/daily/get`,
         'POST',
-        { clinica: auth && auth?.clinica?._id },
+        { clinica: auth && auth?.clinica?._id, beginDay, endDay },
         {
           Authorization: `Bearer ${auth.token}`,
         },
@@ -105,7 +109,7 @@ export const HomePage = () => {
     } catch (error) {
       notify({
         title: t(`${error}`),
-        description: '', 
+        description: '',
         status: 'error',
       })
     }
@@ -151,13 +155,13 @@ export const HomePage = () => {
         />
         <DailyCircle
           nth={2}
-          text={dailyReport.payments}
+          text={dailyReport.payments - dailyReport.expense}
           label={t('Tushumlar')}
         />
         <DailyCircle
           nth={3}
           text={dailyReport.expense}
-          label={t('Xizmatlar')}
+          label={t('Xarajatlar')}
         />
       </div>
       <div className={'h-[25rem]'}>

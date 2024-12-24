@@ -198,6 +198,7 @@ module.exports.getDoctorClients = async (req, res) => {
     );
     // Group clients and calculate doctor and agent profit
     const clients = validServices.map((service) => {
+      console.log(service);
       const totalprice = service.service.price * service.pieces;
       const counterdoctor_profit =
         service.service.counterDoctorProcient <= 100
@@ -208,7 +209,7 @@ module.exports.getDoctorClients = async (req, res) => {
           ? (totalprice / 100) * service.service.counterAgentProcient
           : service.service.counterAgentProcient;
       const counterDoctorServicesProfit =
-        service.counterdoctor.services_profits;
+        service?.counterdoctor?.services_profits || [];
       const counterdoctor_profit_from_agent =
         counterDoctorServicesProfit.find(
           (ds) => ds.service == service.service._id
@@ -304,9 +305,9 @@ module.exports.get = async (req, res) => {
               ds.service == service.service._id &&
               service.service.counterDoctorProcient === 0
           )?.profitInSum || 0;
-          console.log(service.service);
-          
-          
+        // console.log(service.service);
+
+
 
         const totalprice = service.service.price * service.pieces;
         const counterdoctor_profit =

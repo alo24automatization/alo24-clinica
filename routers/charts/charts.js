@@ -15,7 +15,7 @@ module.exports.getMonthly = async (req, res) => {
 
         let count = 0;
         const currentMonth = new Date().getMonth();
-       
+
         while (count <= currentMonth) {
             const startDate = new Date(
                 new Date(new Date().setMonth(count, 1)).setHours(0, 0, 0, 0)
@@ -55,15 +55,13 @@ module.exports.getMonthly = async (req, res) => {
 
 module.exports.getDaily = async (req, res) => {
     try {
-        const { clinica } = req.body;
-       
+        const { clinica, beginDay, endDay } = req.body;
+
         const clients = await OfflineClient.find({
             clinica,
             createdAt: {
-                $gte: new Date(
-                    new Date().setHours(0, 0, 0, 0)
-                ),
-                $lte: new Date()
+                $gte: new Date(beginDay),
+                $lte: new Date(endDay)
             }
         })
             .lean()
@@ -71,10 +69,8 @@ module.exports.getDaily = async (req, res) => {
         const services = await OfflineService.find({
             clinica,
             createdAt: {
-                $gte: new Date(
-                    new Date().setHours(0, 0, 0, 0)
-                ),
-                $lte: new Date()
+                $gte: new Date(beginDay),
+                $lte: new Date(endDay)
             }
         })
             .lean()
@@ -82,10 +78,8 @@ module.exports.getDaily = async (req, res) => {
         const payments = await OfflinePayment.find({
             clinica,
             createdAt: {
-                $gte: new Date(
-                    new Date().setHours(0, 0, 0, 0)
-                ),
-                $lte: new Date()
+                $gte: new Date(beginDay),
+                $lte: new Date(endDay)
             }
         })
             .lean()
@@ -96,10 +90,8 @@ module.exports.getDaily = async (req, res) => {
         const expenses = await Expense.find({
             clinica,
             createdAt: {
-                $gte: new Date(
-                    new Date().setHours(0, 0, 0, 0)
-                ),
-                $lte: new Date()
+                $gte: new Date(beginDay),
+                $lte: new Date(endDay)
             }
         })
             .lean()

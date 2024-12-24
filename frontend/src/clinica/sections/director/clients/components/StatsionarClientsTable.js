@@ -1,4 +1,4 @@
-import {faAngleDown, faAngleUp, faPenAlt, faPrint, faTrash} from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faPenAlt, faPrint, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react'
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ const StatsionarClientsTable = ({
     baseUrl,
     deleteClient
 }) => {
-    const {t} = useTranslation()
+    const { t } = useTranslation()
     const history = useHistory()
 
     return (
@@ -48,9 +48,7 @@ const StatsionarClientsTable = ({
                                         onChange={setPageSize}
                                         style={{ minWidth: "50px" }}
                                     >
-                                        <option value={10}>10</option>
-                                        <option value={25}>25</option>
-                                        <option value={50}>50</option>
+                                        <option value={200}>200</option>
                                         <option value={'all'}>{t("Barchasi")}</option>
                                     </select>
                                 </th>
@@ -245,7 +243,7 @@ const StatsionarClientsTable = ({
                                                         }
                                                         className="btn btn-primary py-0"
                                                     >
-                                                        <FontAwesomeIcon icon={faPenAlt}/>
+                                                        <FontAwesomeIcon icon={faPenAlt} />
                                                     </button>
                                                     {/*<button*/}
                                                     {/*    onClick={() =>*/}

@@ -55,7 +55,7 @@ export const StatsionarReportTable = ({
         Math.abs(
           (new Date(connector?.room?.endday).setHours(0, 0, 0, 0) -
             new Date(connector?.room?.beginday).setHours(0, 0, 0, 0)) /
-            (24 * 60 * 60 * 1000)
+          (24 * 60 * 60 * 1000)
         )
       );
       roomprice = connector?.room?.room?.price * day;
@@ -66,7 +66,7 @@ export const StatsionarReportTable = ({
         Math.abs(
           (new Date(new Date(today).setHours(0, 0, 0, 0)).getTime() -
             new Date(new Date(begin).setHours(0, 0, 0, 0)).getTime()) /
-            (24 * 60 * 60 * 1000)
+          (24 * 60 * 60 * 1000)
         )
       );
       roomprice = connector?.room?.room?.price * day;
@@ -91,8 +91,8 @@ export const StatsionarReportTable = ({
     const debt =
       connector?.payments.length > 0
         ? getTotalprice(connector) -
-          (connector?.discount?.discount || 0) -
-          connector.payments.reduce((prev, el) => prev + el.payment, 0)
+        (connector?.discount?.discount || 0) -
+        connector.payments.reduce((prev, el) => prev + el.payment, 0)
         : 0;
     return debt;
   };
@@ -128,9 +128,7 @@ export const StatsionarReportTable = ({
               onChange={setPageSize}
               style={{ minWidth: "50px" }}
             >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
+              <option value={200}>200</option>
               <option value={"all"}>{t("Barchasi")}</option>
             </select>
           </div>
@@ -247,17 +245,17 @@ export const StatsionarReportTable = ({
                   </th>
                   {type !== 'done' && type !== 'continue' ? (
                     <>
-                    <th className="border py-1 bg-alotrade text-[16px]">
-                    {t("Naqt")}
-                  </th>
-                  <th className="border py-1 bg-alotrade text-[16px]">
-                    {t("Plastik")}
-                  </th>
-                  <th className="border py-1 bg-alotrade text-[16px]">
-                    {t("O'tkazma")}
-                  </th>
+                      <th className="border py-1 bg-alotrade text-[16px]">
+                        {t("Naqt")}
+                      </th>
+                      <th className="border py-1 bg-alotrade text-[16px]">
+                        {t("Plastik")}
+                      </th>
+                      <th className="border py-1 bg-alotrade text-[16px]">
+                        {t("O'tkazma")}
+                      </th>
                     </>
-                 ) : null}
+                  ) : null}
                   <th className="border py-1 bg-alotrade text-[16px]">
                     {t("Chegirma")}
                   </th>
@@ -302,12 +300,12 @@ export const StatsionarReportTable = ({
                         {new Date(
                           connector?.room?.beginday
                         ).toLocaleDateString()}
-                       {" "}
-                    {new Date( connector?.room?.beginday).toLocaleTimeString().split(' ')[0]}
+                        {" "}
+                        {new Date(connector?.room?.beginday).toLocaleTimeString().split(' ')[0]}
                       </td>
                       <td className="border py-1 text-[16px] text-right">
                         {connector?.room?.endday &&
-                         `${new Date(connector?.room?.endday).toLocaleDateString()} ${new Date(connector?.room?.endday).toLocaleTimeString().split(' ')[0]}`}
+                          `${new Date(connector?.room?.endday).toLocaleDateString()} ${new Date(connector?.room?.endday).toLocaleTimeString().split(' ')[0]}`}
                       </td>
                       <td className="border py-1 text-[16px] text-right">
                         {getTotalprice(connector)}
@@ -320,27 +318,27 @@ export const StatsionarReportTable = ({
                       </td>
                       {/*  */}
                       {type !== 'done' && type !== 'continue' ? (
-                    <>
-                      <td className="border py-1 text-[16px] text-right">
-                      {connector.payments.reduce(
-                          (prev, el) => prev + el.cash,
-                          0
-                        )}
-                      </td>
-                      <td className="border py-1 text-[16px] text-right">
-                        {connector.payments.reduce(
-                          (prev, el) => prev + el.card,
-                          0
-                        )}
-                      </td>
-                      <td className="border py-1 text-[16px] text-right">
-                        {connector.payments.reduce(
-                          (prev, el) => prev + el.transfer,
-                          0
-                        )}
-                      </td>
-                    </>
-                 ) : null}
+                        <>
+                          <td className="border py-1 text-[16px] text-right">
+                            {connector.payments.reduce(
+                              (prev, el) => prev + el.cash,
+                              0
+                            )}
+                          </td>
+                          <td className="border py-1 text-[16px] text-right">
+                            {connector.payments.reduce(
+                              (prev, el) => prev + el.card,
+                              0
+                            )}
+                          </td>
+                          <td className="border py-1 text-[16px] text-right">
+                            {connector.payments.reduce(
+                              (prev, el) => prev + el.transfer,
+                              0
+                            )}
+                          </td>
+                        </>
+                      ) : null}
                       {/*  */}
                       <td className="border py-1 text-[16px] text-right">
                         {connector?.discount?.discount || 0}
@@ -351,25 +349,25 @@ export const StatsionarReportTable = ({
                       {!location.pathname.includes(
                         "/alo24/statsionarreport"
                       ) && (
-                        <td className="border py-1 text-[16px] text-center">
-                          {loading ? (
-                            <button className="btn btn-success" disabled>
-                              <span className="spinner-border spinner-border-sm"></span>
-                              Loading...
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-success py-0"
-                              onClick={() => {
-                                changeClient(connector, key);
-                                setVisible(true);
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faMoneyBill} />
-                            </button>
-                          )}
-                        </td>
-                      )}
+                          <td className="border py-1 text-[16px] text-center">
+                            {loading ? (
+                              <button className="btn btn-success" disabled>
+                                <span className="spinner-border spinner-border-sm"></span>
+                                Loading...
+                              </button>
+                            ) : (
+                              <button
+                                className="btn btn-success py-0"
+                                onClick={() => {
+                                  changeClient(connector, key);
+                                  setVisible(true);
+                                }}
+                              >
+                                <FontAwesomeIcon icon={faMoneyBill} />
+                              </button>
+                            )}
+                          </td>
+                        )}
                       <td className="border py-1 text-[16px] text-center">
                         {loading ? (
                           <button className="btn btn-success" disabled>
@@ -434,44 +432,44 @@ export const StatsionarReportTable = ({
 
                   {type !== 'done' && type !== 'continue' ? (
                     <>
-                    <td className="border py-1 text-[16px] text-right font-bold">
-                    {connectors.reduce(
-                      (prev, connector) =>
-                        prev +
-                        connector.payments.reduce(
-                          (sum, payment) => sum + payment.cash,
+                      <td className="border py-1 text-[16px] text-right font-bold">
+                        {connectors.reduce(
+                          (prev, connector) =>
+                            prev +
+                            connector.payments.reduce(
+                              (sum, payment) => sum + payment.cash,
+                              0
+                            ),
                           0
-                        ),
-                      0
-                    )}
-                  </td>
-                  <td className="border py-1 text-[16px] text-right font-bold">
-                    {connectors.reduce(
-                      (prev, connector) =>
-                        prev +
-                        connector.payments.reduce(
-                          (sum, payment) => sum + payment.card,
+                        )}
+                      </td>
+                      <td className="border py-1 text-[16px] text-right font-bold">
+                        {connectors.reduce(
+                          (prev, connector) =>
+                            prev +
+                            connector.payments.reduce(
+                              (sum, payment) => sum + payment.card,
+                              0
+                            ),
                           0
-                        ),
-                      0
-                    )}
-                  </td>
-                  <td className="border py-1 text-[16px] text-right font-bold">
-                    {connectors.reduce(
-                      (prev, connector) =>
-                        prev +
-                        connector.payments.reduce(
-                          (sum, payment) => sum + payment.transfer,
+                        )}
+                      </td>
+                      <td className="border py-1 text-[16px] text-right font-bold">
+                        {connectors.reduce(
+                          (prev, connector) =>
+                            prev +
+                            connector.payments.reduce(
+                              (sum, payment) => sum + payment.transfer,
+                              0
+                            ),
                           0
-                        ),
-                      0
-                    )}
-                  </td>
+                        )}
+                      </td>
                     </>
                   ) : null}
-                  
+
                   <td className="border py-1 text-[16px] text-right font-bold">
-                  {connectors.reduce(
+                    {connectors.reduce(
                       (prev, el) => prev + (el?.discount?.discount || 0),
                       0
                     )}
@@ -549,13 +547,13 @@ export const StatsionarReportTable = ({
                       </td>
                       <td className="border py-1 text-[16px] text-right">
                         {new Date(connector?.room?.beginday).toDateString()}
-                          {" "}
+                        {" "}
                         {new Date(connector?.room?.beginday).toLocaleTimeString().split(' ')[0]}
                       </td>
                       <td className="border py-1 text-[16px] text-right">
                         {connector?.room?.endday &&
                           `${new Date(connector?.room?.endday).toLocaleDateString()} ${new Date(connector?.room?.endday).toLocaleTimeString().split(' ')[0]}`}
-                        
+
                       </td>
                       <td className="border py-1 text-[16px] text-right">
                         {getTotalprice(connector)}
@@ -575,25 +573,25 @@ export const StatsionarReportTable = ({
                       {!location.pathname.includes(
                         "/alo24/statsionarreport"
                       ) && (
-                        <td className="border py-1 text-[16px] text-center">
-                          {loading ? (
-                            <button className="btn btn-success" disabled>
-                              <span className="spinner-border spinner-border-sm"></span>
-                              Loading...
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-success py-0"
-                              onClick={() => {
-                                changeClient(connector, key);
-                                setVisible(true);
-                              }}
-                            >
-                              <FontAwesomeIcon icon={faMoneyBill} />
-                            </button>
-                          )}
-                        </td>
-                      )}
+                          <td className="border py-1 text-[16px] text-center">
+                            {loading ? (
+                              <button className="btn btn-success" disabled>
+                                <span className="spinner-border spinner-border-sm"></span>
+                                Loading...
+                              </button>
+                            ) : (
+                              <button
+                                className="btn btn-success py-0"
+                                onClick={() => {
+                                  changeClient(connector, key);
+                                  setVisible(true);
+                                }}
+                              >
+                                <FontAwesomeIcon icon={faMoneyBill} />
+                              </button>
+                            )}
+                          </td>
+                        )}
                       <td className="border py-1 text-[16px] text-center">
                         {loading ? (
                           <button className="btn btn-success" disabled>
@@ -624,94 +622,94 @@ export const StatsionarReportTable = ({
           <div>
             <table className="table m-0 table-sm" id="statsionarreport-table">
               <thead>
-              <tr>
+                <tr>
                   <th className="border py-1 bg-alotrade text-[16px] text-center">
-                      №
+                    №
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center">
-                      F.I.O
+                    F.I.O
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center">
-                      To'lov sanasi
+                    To'lov sanasi
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center">
-                      Tel
+                    Tel
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center">
-                      ID
+                    ID
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center">
-                      Jami to'lov
+                    Jami to'lov
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center">
-                      To'langan
+                    To'langan
                   </th>
 
                   <th className="border py-1 bg-alotrade text-[16px] text-center align-center">
-                      Naqd
+                    Naqd
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center align-center">
-                      Plastik
+                    Plastik
                   </th>
                   <th className="border py-1 bg-alotrade text-[16px] text-center align-center">
-                      O'tkazma
+                    O'tkazma
                   </th>
                   {/*{!location.pathname.includes("/alo24/statsionarreport") && (*/}
                   {/*    <th className="border py-1 bg-alotrade text-[16px]">To'lov</th>*/}
                   {/*)}*/}
 
                   {/*<th className="border py-1 bg-alotrade text-[16px]">Chek</th>*/}
-              </tr>
+                </tr>
               </thead>
 
-                <tbody>
+              <tbody>
                 {connectors.map((connector, key) => {
-                    return (
-                      <tr key={key}>
-                        <td
-                            className={`border py-1 font-weight-bold text-right text-[16px]`}
-                            style={{maxWidth: "30px !important"}}
-                        >
-                          {currentPage * countPage + key + 1}
-                        </td>
-                        <td className="border py-1 text-[16px] font-weight-bold">
-                          {connector.client.lastname +
-                              " " +
-                              connector.client.firstname}
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          <Moment date={connector.createdAt} format={"DD.MM.yyyy HH:mm:ss"}/>
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          +998{connector.client.phone}
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          {connector.client.id}
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          <Money value={connector.total}/>
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          <Money value={connector.payment}/>
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          <Money value={connector.cash}/>
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          <Money value={connector.card}/>
-                        </td>
-                        <td className="border py-1 text-[16px] text-right">
-                          <Money value={connector.transfer}/>
-                        </td>
-                      </tr>
+                  return (
+                    <tr key={key}>
+                      <td
+                        className={`border py-1 font-weight-bold text-right text-[16px]`}
+                        style={{ maxWidth: "30px !important" }}
+                      >
+                        {currentPage * countPage + key + 1}
+                      </td>
+                      <td className="border py-1 text-[16px] font-weight-bold">
+                        {connector.client.lastname +
+                          " " +
+                          connector.client.firstname}
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        <Moment date={connector.createdAt} format={"DD.MM.yyyy HH:mm:ss"} />
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        +998{connector.client.phone}
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        {connector.client.id}
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        <Money value={connector.total} />
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        <Money value={connector.totalWhileNow} />
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        <Money value={connector.cash} />
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        <Money value={connector.card} />
+                      </td>
+                      <td className="border py-1 text-[16px] text-right">
+                        <Money value={connector.transfer} />
+                      </td>
+                    </tr>
                   );
                 })}
 
                 <tr>
                   <td
-                      className={`border py-1 font-weight-bold text-right text-[16px]`}
-                      style={{ maxWidth: "30px !important" }}
-                      colSpan={2}
+                    className={`border py-1 font-weight-bold text-right text-[16px]`}
+                    style={{ maxWidth: "30px !important" }}
+                    colSpan={2}
                   >
                     Qoldiq:
                   </td>
@@ -737,7 +735,7 @@ export const StatsionarReportTable = ({
                   >
                     <Money
                       value={connectors.reduce(
-                        (acc, curr) => acc + curr.payment,
+                        (acc, curr) => acc + curr.totalWhileNow,
                         0
                       )}
                     />

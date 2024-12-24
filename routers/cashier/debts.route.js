@@ -37,7 +37,7 @@ module.exports.offline = async (req, res) => {
         debt: { $gt: 0 },
       })
         .select("-isArchive -updatedAt -__v")
-        .populate("client", "fullname born phone id").populate('services','service.priceNDS -_id')
+        .populate("client", "fullname born phone id").populate('services', 'service.priceNDS -_id')
         .sort({ _id: -1 })
         .lean()
         .then((connectors) => {
@@ -57,12 +57,12 @@ module.exports.offline = async (req, res) => {
         clinica,
         debt: { $gt: 0 },
         createdAt: {
-          $gte: beginDay,
-          $lt: endDay,
+          $gte: new Date(beginDay),
+          $lte: new Date(endDay),
         },
       })
         .select("-isArchive -updatedAt -__v")
-        .populate("client", "fullname born phone id").populate('services','service.priceNDS -_id')
+        .populate("client", "fullname born phone id").populate('services', 'service.priceNDS -_id')
         .sort({ _id: -1 })
         .lean();
     }

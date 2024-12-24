@@ -9,6 +9,7 @@ import { AuthContext } from "../../../../context/AuthContext";
 export const TableClients = ({
   currentConnectors,
   setCurrentConnectors,
+  connectors,
   searchFullname,
   searchId,
   setPageSize,
@@ -57,10 +58,8 @@ export const TableClients = ({
                 onChange={setPageSize}
                 style={{ minWidth: "50px" }}
               >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
+                <option value={200}>200</option>
+                <option value={"all"}>{t("Barchasi")}</option>
               </select>
             </div>
             <div>
@@ -96,10 +95,10 @@ export const TableClients = ({
             <div className="text-center ml-auto">
               <Pagination
                 setCurrentDatas={setCurrentConnectors}
-                datas={currentConnectors}
+                datas={connectors}
                 setCurrentPage={setCurrentPage}
                 countPage={countPage}
-                totalDatas={currentConnectors.length}
+                totalDatas={connectors.length}
               />
             </div>
             <div className="text-center">

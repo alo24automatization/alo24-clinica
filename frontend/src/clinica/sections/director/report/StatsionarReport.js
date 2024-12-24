@@ -39,7 +39,7 @@ export const StatsionarReport = () => {
   //====================================================================
   // Pagination
   const [currentPage, setCurrentPage] = useState(0);
-  const [countPage, setCountPage] = useState(10);
+  const [countPage, setCountPage] = useState(200);
 
   const indexLastConnector = (currentPage + 1) * countPage;
   const indexFirstConnector = indexLastConnector - countPage;
@@ -188,7 +188,7 @@ export const StatsionarReport = () => {
   const setPageSize = (e) => {
     if (e.target.value === "all") {
       setCurrentPage(0);
-      setCountPage(100);
+      setCountPage(200);
       setCurrentConnectors(connectors);
     } else {
       setCurrentPage(0);

@@ -13,7 +13,7 @@ const animatedComponents = makeAnimated()
 
 const MainReport = () => {
 
-  const {t} = useTranslation()
+  const { t } = useTranslation()
 
   const [beginDay, setBeginDay] = useState(
     new Date(new Date().setUTCHours(0, 0, 0, 0)),
@@ -43,7 +43,7 @@ const MainReport = () => {
   //====================================================================
   // Pagination
   const [currentPage, setCurrentPage] = useState(0)
-  const [countPage, setCountPage] = useState(10)
+  const [countPage, setCountPage] = useState(200)
 
   const indexLastConnector = (currentPage + 1) * countPage
   const indexFirstConnector = indexLastConnector - countPage
@@ -216,16 +216,16 @@ const MainReport = () => {
   //====================================================================
   //====================================================================
   const setPageSize = (e) => {
-      if (e.target.value === 'all') {
-        setCurrentPage(0)
-        setCountPage(100)
-        setCurrentConnectors(connectors)
-      } else {
-        setCurrentPage(0)
-        setCountPage(e.target.value)
-        setCurrentConnectors(connectors.slice(0, e.target.value))
-      }
+    if (e.target.value === 'all') {
+      setCurrentPage(0)
+      setCountPage(200)
+      setCurrentConnectors(connectors)
+    } else {
+      setCurrentPage(0)
+      setCountPage(e.target.value)
+      setCurrentConnectors(connectors.slice(0, e.target.value))
     }
+  }
 
   //====================================================================
   //====================================================================
@@ -370,7 +370,7 @@ const MainReport = () => {
   const [user, setUser] = useState({})
   useEffect(() => {
     if (check?.client) {
-      request2('/api/offlineclient/client/get/', 'POST', {userId: check.client}).then((data) => {
+      request2('/api/offlineclient/client/get/', 'POST', { userId: check.client }).then((data) => {
         setUser(data)
       }).catch((error) => {
         toast({
@@ -380,7 +380,7 @@ const MainReport = () => {
           duration: 5000,
           isClosable: true,
           position: 'top-right',
-      })
+        })
       })
     }
   }, [check, baseUrl])

@@ -7,8 +7,8 @@ export const Pagination = ({
   setCurrentPage,
   setCurrentDatas,
   datas,
-  currentPage2=null,
-  setCurrentPage2=null,
+  currentPage2 = null,
+  setCurrentPage2 = null,
 }) => {
   const pageNumbers = []
   for (let i = 1; i <= Math.ceil(totalDatas / countPage); i++) {
@@ -17,7 +17,7 @@ export const Pagination = ({
 
   const pageHandle = useCallback(
     (data) => {
-      setCurrentPage2 && setCurrentPage2(data.selected)
+      setCurrentPage(data.selected)
       setCurrentDatas(
         datas.slice(
           data.selected * countPage,
@@ -32,7 +32,7 @@ export const Pagination = ({
   return (
     <nav className="float-right">
       <ReactPaginate
-                {...prop}
+        {...prop}
         previousLabel={'<<'}
         nextLabel=">>"
         breakLabel={'...'}
