@@ -174,25 +174,25 @@ export const OfflineClients = () => {
     },
     [request, auth, notify, indexFirstConnector, indexLastConnector]
   );
-  const getLastCardNumber = async () => {
-    try {
-      const { card_number } = await request(
-        `/api/offlineclient/client/lastCardNumber/${auth && auth.clinica._id}`,
-        "GET",
-        null,
-        {
-          Authorization: `Bearer ${auth.token}`,
-        }
-      );
-      setLastCardNumber(card_number);
-    } catch (error) {
-      notify({
-        title: t(`${error}`),
-        description: "",
-        status: "error",
-      });
-    }
-  };
+  // const getLastCardNumber = async () => {
+  //   try {
+  //     const { card_number } = await request(
+  //       `/api/offlineclient/client/lastCardNumber/${auth && auth.clinica._id}`,
+  //       "GET",
+  //       null,
+  //       {
+  //         Authorization: `Bearer ${auth.token}`,
+  //       }
+  //     );
+  //     setLastCardNumber(card_number);
+  //   } catch (error) {
+  //     notify({
+  //       title: t(`${error}`),
+  //       description: "",
+  //       status: "error",
+  //     });
+  //   }
+  // };
   //====================================================================
   //====================================================================
 
@@ -797,7 +797,7 @@ export const OfflineClients = () => {
       setModal(false);
       clearDatas();
       setVisible(false);
-      getLastCardNumber();
+      // getLastCardNumber();
       const ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
       const socket = socketIOClient(ENDPOINT, {
         path: "/ws",
@@ -1081,7 +1081,7 @@ export const OfflineClients = () => {
       setS(1);
       getConnectors(beginDay, endDay);
       getDepartments();
-      getLastCardNumber();
+      // getLastCardNumber();
       getCounterDoctors();
       getAdvers();
       getProducts();
@@ -1177,11 +1177,9 @@ export const OfflineClients = () => {
     <button
       onClick={onClick}
       disabled={isTaken}
-      className={` ${
-        isTaken ? "bg-red-200 !cursor-not-allowed" : "hover:bg-green-200 "
-      } ${
-        selectedTurn === number ? "bg-green-100" : ""
-      } p-3   transition-all duration-300 border-black  border rounded`}
+      className={` ${isTaken ? "bg-red-200 !cursor-not-allowed" : "hover:bg-green-200 "
+        } ${selectedTurn === number ? "bg-green-100" : ""
+        } p-3   transition-all duration-300 border-black  border rounded`}
     >
       {number}
     </button>
@@ -1243,17 +1241,17 @@ export const OfflineClients = () => {
     const updatedClientTurns = clientTurns.map((ct) =>
       ct.value === departmentTurns.id
         ? {
-            ...ct,
-            turn: selectedTurn,
-            label: (
-              <div className="w-full flex justify-between items-center gap-x-2">
-                <span>{ct.name}</span>
-                <span className="p-1 rounded-sm !bg-green-500 font-medium  text-white">
-                  {selectedTurn}
-                </span>
-              </div>
-            ),
-          }
+          ...ct,
+          turn: selectedTurn,
+          label: (
+            <div className="w-full flex justify-between items-center gap-x-2">
+              <span>{ct.name}</span>
+              <span className="p-1 rounded-sm !bg-green-500 font-medium  text-white">
+                {selectedTurn}
+              </span>
+            </div>
+          ),
+        }
         : ct
     );
     const updatedServices = services.map((ser) =>
@@ -1269,10 +1267,10 @@ export const OfflineClients = () => {
     const updatedDepartment = departments.map((d) =>
       d._id === departmentTurns.id
         ? {
-            ...d,
-            turn: selectedTurn,
-            services: d.services.map((s) => ({ ...s, turn: selectedTurn })),
-          }
+          ...d,
+          turn: selectedTurn,
+          services: d.services.map((s) => ({ ...s, turn: selectedTurn })),
+        }
         : d
     );
     setDepartments(updatedDepartment);
@@ -1384,8 +1382,8 @@ export const OfflineClients = () => {
                   client._id && !isAddConnector
                     ? isActive && addHandler
                     : client._id && isAddConnector
-                    ? isActive && addConnectorHandler
-                    : isActive && createHandler
+                      ? isActive && addConnectorHandler
+                      : isActive && createHandler
                 }
                 setNewProducts={setNewProducts}
                 setNewServices={setServices}
@@ -1499,8 +1497,8 @@ export const OfflineClients = () => {
           client._id && !isAddConnector
             ? isActive && addHandler
             : client._id && isAddConnector
-            ? isActive && addConnectorHandler
-            : isActive && createHandler
+              ? isActive && addConnectorHandler
+              : isActive && createHandler
         }
         basic={client.lastname + " " + client.firstname}
       />
